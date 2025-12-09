@@ -1,0 +1,12 @@
+
+#define PIN1_MOT_ANT_DX PB8
+#define PIN2_MOT_ANT_DX PB9
+
+#define PIN1_MOT_POS_DX PB6
+#define PIN2_MOT_POS_DX PB7
+
+#define PIN1_MOT_POS_SX PA_8
+#define PIN2_MOT_POS_SX PA_10
+
+#define PIN1_MOT_ANT_SX PA_1
+#define PIN2_MOT_ANT_SX PA_0
