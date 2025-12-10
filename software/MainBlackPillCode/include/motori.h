@@ -2,6 +2,7 @@
 #define MOTORI_H
 
 #include <Arduino.h>
+#include "robotpropin.h"
 
 #define MIN_PWM 80
 
