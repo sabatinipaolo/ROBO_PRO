@@ -1,50 +1,59 @@
-#include <Arduino.h>
-
+#include <Wire.h>
 #include <Adafruit_SSD1306.h>
+#include <Adafruit_GFX.h>
 
-#include "robotpropin.h"
+#define PIN_I2C_SDA PB3
+#define PIN_I2C_SCL PB4
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_ADDR 0x3C // Common address for SSD1306
 
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 32 // OLED display height, in pixels
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
-#define OLED_RESET 4       // Reset pin # (or -1 if sharing Arduino reset pin)
-#define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+void setup() {
+  Serial.begin(115200);
+  delay(2000); // Wait for Serial
 
-void setup()
-{
-    Serial.begin(115200);
+  // 1. CRITICAL: Initialize I2C on the specific pins BEFORE Wire.begin()
+  Wire.setSDA(PIN_I2C_SDA);
+  Wire.setSCL(PIN_I2C_SCL);
+  Wire.begin();
 
-     Wire.setSDA(PIN_I2C_SDA);
-     Wire.setSCL(PIN_I2C_SCL);
-     Wire.begin();
-
-    display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-
-    if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS))
-    {
-        
-        for (;;)
-            Serial.println(F("SSD1306 allocation failed"));
-            delay(2000);
+  // 2. Perform an I2C scan to debug
+  Serial.println("\nScanning I2C bus...");
+  byte error, address;
+  int nDevices = 0;
+  for(address = 1; address < 127; address++ ) {
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
+    if (error == 0) {
+      Serial.print("Device found at 0x");
+      if (address<16) Serial.print("0");
+      Serial.println(address,HEX);
+      nDevices++;
     }
-    // else{   
-        
-    //     for (;;)
-    //         Serial.println(F("SSD1306 OK !!!!!!!!!"));
-    //         delay(2000);
+  }
+  if (nDevices == 0) {
+    Serial.println("No I2C devices found. Check wiring.");
+  } else {
+    Serial.println("Scan complete.");
+  }
 
-    // }
+  // 3. Initialize OLED if a device was found
+  if(!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Halt forever
+  }
+
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0,0);
+  display.println("Hello, OLED!");
+  display.display();
+  Serial.println("OLED initialized.");
 }
 
-// the loop function runs over and over again forever
-void loop()
-{
-    display.clearDisplay();
-    display.setTextSize(1);      // Normal 1:1 pixel scale
-    display.setTextColor(SSD1306_WHITE); // Draw white text
-    display.setCursor(0, 0);     // Start at top-left corner
-    display.println(F("Hello, world!"));
-    display.display();
-    delay(2000);
+void loop() {
+  // Your main code here
 }
