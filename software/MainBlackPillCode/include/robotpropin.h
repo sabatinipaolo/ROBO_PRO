@@ -1,3 +1,6 @@
+#ifndef ROBOTPROPIN_H
+#define ROBOTPROPIN_H
+
 
 #define PIN1_MOT_ANT_DX PB8
 #define PIN2_MOT_ANT_DX PB9
@@ -10,3 +13,6 @@
 
 #define PIN1_MOT_ANT_SX PA_1
 #define PIN2_MOT_ANT_SX PA_0
+
+
+#endif // ROBOTPROPIN_H
