@@ -15,4 +15,10 @@
 #define PIN2_MOT_ANT_SX PA0
 
 
+#define PIN_I2C_SDA PB3
+#define PIN_I2C_SCL PB4
+
+
+
+
 #endif // ROBOTPROPIN_H
