@@ -2,16 +2,18 @@
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_GFX.h>
 
-#define PIN_I2C_SDA PB6
-#define PIN_I2C_SCL PB7
+// guarda qui: https://community.platformio.org/t/stm32f411-based-custom-pcb-i2c-debugging/48614/2
+#ifdef BLACKPILL_F411CE
+  #define PIN_WIRE_SDA PB7 
+  #define PIN_WIRE_SCL PB6
+#endif 
 
 void setup() {
   Serial.begin(115200);
-  delay(5000); // Wait for Serial
+  while (!Serial); // Wait for Serial
 
   // 1. CRITICAL: Initialize I2C on the specific pins BEFORE Wire.begin()
-  Wire.setSDA(PIN_I2C_SDA);
-  Wire.setSCL(PIN_I2C_SCL);
+
   Wire.begin();
 
   
@@ -21,7 +23,7 @@ void setup() {
 void loop() {
   // Your main code here
 
-  delay(10000); // Wait 10 seconds before next scan
+  delay(1000); // Wait 10 seconds before next scan
   // 2. Perform an I2C scan to debug
   Serial.println("\nScanning I2C bus...");
   byte error, address;
