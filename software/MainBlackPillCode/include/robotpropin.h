@@ -1,21 +1,34 @@
 #ifndef ROBOTPROPIN_H
 #define ROBOTPROPIN_H
 
-#define PIN1_MOT_ANT_DX	PA8  	 // TIM1_CH1
-#define PIN2_MOT_ANT_DX	PA9  	 // TIM1_CH2
+#ifdef ARDUINO_MEGA2560
+  #define PIN1_MOT_ANT_DX 2
+  #define PIN2_MOT_ANT_DX 3
 
-#define PIN1_MOT_POS_DX	PA10 	 // TIM1_CH3
-#define PIN2_MOT_POS_DX	PB0  	 // TIM3_CH3 
+  #define PIN1_MOT_POS_DX 4
+  #define PIN2_MOT_POS_DX 5
 
-#define PIN1_MOT_ANT_SX	PA0  	 // TIM2_CH1
-#define PIN2_MOT_ANT_SX	PA1  	 // TIM2_CH2
-#define PIN1_MOT_POS_SX	PA6  	 // TIM3_CH1
-#define PIN2_MOT_POS_SX	PA7  	 // TIM3_CH2
+  #define PIN1_MOT_POS_SX 6
+  #define PIN2_MOT_POS_SX 7
 
-//#define 	PA11 	 // USB D-  
-//#define 	PA12 	 // USB D+ 
+  #define PIN1_MOT_ANT_SX 8
+  #define PIN2_MOT_ANT_SX 9
+#endif
 
 #ifdef BLACKPILL_F411CE
+#define PIN1_MOT_ANT_DX PB8
+#define PIN2_MOT_ANT_DX PB9
+
+#define PIN1_MOT_POS_DX PB3
+#define PIN2_MOT_POS_DX PB4
+
+#define PIN1_MOT_POS_SX PA8
+#define PIN2_MOT_POS_SX PA10
+
+#define PIN1_MOT_ANT_SX PA2
+#define PIN2_MOT_ANT_SX PA0
+
+
   #define PIN_WIRE_SDA PB7 //default in wire.h (se cambi valore warning di ridefinizione)
   #define PIN_WIRE_SCL PB6 //default in wire.h (se cambi valore warning di ridefinizione)
 #endif 
