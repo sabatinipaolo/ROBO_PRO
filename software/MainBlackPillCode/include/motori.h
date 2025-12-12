@@ -25,9 +25,12 @@ private:
 Motore::Motore(int pin1, int pin2)
     : _pin1(pin1), _pin2(pin2)
 {
+
     pinMode(_pin1, OUTPUT);
     pinMode(_pin2, OUTPUT);
-};
+    stop();
+}
+
 
 void Motore::antiorario(int pwm)
 {
