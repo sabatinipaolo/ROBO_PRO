@@ -5,12 +5,14 @@
 Robot robot; 
 
 void setup()
-{
-
+{ 
 }
 void loop()
 {
 
- robot.test_motori();
+ delay(600);robot.trasla(0,100);
+ delay(600);robot.trasla(90,100);
+ delay(600);robot.trasla(180,100);
+ delay(600);robot.trasla(270,100);
  
 }
