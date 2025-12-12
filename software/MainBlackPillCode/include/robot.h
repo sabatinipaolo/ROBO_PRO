@@ -34,9 +34,9 @@ public:
 
     Motore motori[4];
     Motore &_mot_ant_dx; // alias per motore anteriore destro
-    Motore &_mot_ant_sx; // alias per motore anteriore sinistro
     Motore &_mot_pos_dx; // alias per motore posteriore destro
     Motore &_mot_pos_sx; // alias per motore posteriore sinistro
+    Motore &_mot_ant_sx; // alias per motore anteriore sinistro
 
     void test_motori();
 private:
