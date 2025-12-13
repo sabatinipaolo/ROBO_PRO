@@ -8,13 +8,15 @@
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_GFX.h>
 #include <Wire.h>
-#include <Adafruit_SSD1306.h>
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 32 // OLED display height, in pixels
-#define OLED_I2C_ADDR 0x3C
-#define OLED_RESET -1  // Reset pin # (or -1 if sharing Arduino reset pin)
 
-
+#ifdef HAS_OLED_DISPLAY
+    #include <Wire.h>
+    #include <Adafruit_SSD1306.h>
+    #define SCREEN_WIDTH 128 // OLED display width, in pixels
+    #define SCREEN_HEIGHT 32 // OLED display height, in pixels
+    #define OLED_I2C_ADDR 0x3C
+    #define OLED_RESET -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+#endif
 
 constexpr float radice2_su2 = 0.70710678118654752440084436210485;
 constexpr float pi = 3.14159265358979323846;
@@ -40,8 +42,11 @@ public:
 
     void test_motori();
 private:
+#ifdef HAS_OLED_DISPLAY
     //TODO: Adafruit considera deprecato il costruttore, convertire in nuovo
-    Adafruit_SSD1306 display; 
+    Adafruit_SSD1306 display;
+#endif
+
     
 };
 
@@ -55,13 +60,18 @@ Robot::Robot()
       _mot_ant_dx(motori[0]),
       _mot_pos_dx(motori[1]),
       _mot_pos_sx(motori[2]),
-      _mot_ant_sx(motori[3]),
-      display(OLED_RESET)
-
+      _mot_ant_sx(motori[3])
+      #ifdef HAS_OLED_DISPLAY
+        ,display(OLED_RESET)
+      #endif
 {
     stop();
+
+
+    Serial.println("Robot inizializzato");
     pinMode(LED_BUILTIN,OUTPUT);
-    //display = Adafruit_SSD1306(OLED_RESET);
+    #ifdef HAS_OLED_DISPLAY
+    
     if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_I2C_ADDR))
     {   
         while (1)
@@ -83,12 +93,24 @@ Robot::Robot()
     }
     display.setTextSize(2);              // Normal 1:1 pixel scale
     display.setTextColor(SSD1306_WHITE); // Draw white text
+    display.setCursor(0, 0);
+    display.clearDisplay();
+    display.println("ROBO");
+    display.display();                   // Show initial text
+    delay(1000);
+    #endif  
 }
 
 void Robot::trasla(float alfa, int velocita)
-{   display.clearDisplay();
-    display.println(velocita);
-    
+{   
+    #ifdef HAS_OLED_DISPLAY
+        display.clearDisplay();
+        display.println(velocita);
+        display.display();
+    #endif
+    Serial.println(" Robot.trasla ()");
+
+
     float alfa_rad = alfa * pi / 180.0f;
     float cosa = cos(alfa_rad + quarantacinque_rad);
     float sina = sin(alfa_rad + quarantacinque_rad);
