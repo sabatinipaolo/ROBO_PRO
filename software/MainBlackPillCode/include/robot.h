@@ -26,6 +26,7 @@ class Robot
 {
 public:
     Robot();
+    void inizializza();
     void trasla(float alfa, int velocita);
     void stop();
 
@@ -66,12 +67,17 @@ Robot::Robot()
       #endif
 {
     stop();
+ 
+}
 
+void Robot::inizializza()
+{
+    stop();
 
-    Serial.println("Robot inizializzato");
     pinMode(LED_BUILTIN,OUTPUT);
+
     #ifdef HAS_OLED_DISPLAY
-    
+    Serial.println("Initializing OLED display...");
     if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_I2C_ADDR))
     {   
         while (1)
@@ -91,16 +97,18 @@ Robot::Robot()
             delay(300);            
         }
     }
+    Serial.println("Initializing OLED display...: done");
     display.setTextSize(2);              // Normal 1:1 pixel scale
     display.setTextColor(SSD1306_WHITE); // Draw white text
-    display.setCursor(0, 0);
-    display.clearDisplay();
+
+    display.clearDisplay();    display.setCursor(0, 0);
     display.println("ROBO");
     display.display();                   // Show initial text
     delay(1000);
-    #endif  
-}
+    #endif 
+    
 
+}
 void Robot::trasla(float alfa, int velocita)
 {   
     #ifdef HAS_OLED_DISPLAY
@@ -108,6 +116,7 @@ void Robot::trasla(float alfa, int velocita)
         display.println(velocita);
         display.display();
     #endif
+    
     Serial.println(" Robot.trasla ()");
 
 
