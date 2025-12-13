@@ -27,6 +27,7 @@ Motore::Motore(int pin1, int pin2)
 {
     pinMode(_pin1, OUTPUT);
     pinMode(_pin2, OUTPUT);
+    stop();
 };
 
 void Motore::antiorario(int pwm)
