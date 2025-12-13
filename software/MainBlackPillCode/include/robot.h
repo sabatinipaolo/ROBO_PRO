@@ -60,13 +60,13 @@ Robot::Robot()
 
 {
     stop();
-pinMode(LED_BUILTIN,OUTPUT);
+    pinMode(LED_BUILTIN,OUTPUT);
     //display = Adafruit_SSD1306(OLED_RESET);
     if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_I2C_ADDR))
     {   
         while (1)
         {   
-            //Serial.println(F("SSD1306 allocation failed"));
+            Serial.println(F("SSD1306 allocation failed"));
             digitalWrite(LED_BUILTIN,HIGH);
             delay(300);
             digitalWrite(LED_BUILTIN,LOW);
