@@ -16,6 +16,7 @@
 #endif
 
 #ifdef BLACKPILL_F411CE
+
 #define PIN1_MOT_ANT_DX PA2
 #define PIN2_MOT_ANT_DX PA3
 
