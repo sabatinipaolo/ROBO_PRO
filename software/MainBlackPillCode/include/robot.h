@@ -4,6 +4,14 @@
 #include "motori.h"
 #include "robotpropin.h"
 
+
+#include <Adafruit_SSD1306.h>
+#include <Adafruit_GFX.h>
+#include <Wire.h>
+#ifdef HAS_OLED_DISPLAY
+    extern Adafruit_SSD1306 display;
+#endif
+
 constexpr float radice2_su2 = 0.70710678118654752440084436210485;
 constexpr float pi = 3.14159265358979323846;
 constexpr float quarantacinque_rad = 45 * PI / 180.0f;
@@ -12,6 +20,7 @@ class Robot
 {
 public:
     Robot();
+    void inizializza();
     void trasla(float alfa, int velocita);
     void stop();
 
@@ -27,6 +36,8 @@ public:
     Motore &_mot_ant_sx; // alias per motore anteriore sinistro
 
     void test_motori();
+private:
+    
 };
 
 Robot::Robot()
@@ -43,10 +54,32 @@ Robot::Robot()
 
 {
     stop();
+ 
+}
+
+void Robot::inizializza()
+{
+    stop();
+
 }
 
 void Robot::trasla(float alfa, int velocita)
-{
+{   
+    #ifdef HAS_OLED_DISPLAY
+        display.clearDisplay();
+        display.setCursor(0, 0); // Start at top-left corner
+        display.print(alfa);
+        display.print(" ");
+        display.print(velocita);
+        display.display();
+    #endif
+    
+    Serial.print(" Robot.trasla : alfa= ");
+    Serial.print(alfa);
+    Serial.print(" velocita= ");
+    Serial.println(velocita);
+
+
     float alfa_rad = alfa * pi / 180.0f;
     float cosa = cos(alfa_rad + quarantacinque_rad);
     float sina = sin(alfa_rad + quarantacinque_rad);
