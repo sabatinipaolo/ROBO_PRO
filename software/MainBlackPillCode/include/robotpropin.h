@@ -23,7 +23,7 @@
 #define PIN1_MOT_POS_DX PA0
 #define PIN2_MOT_POS_DX PA1
 
-#define PIN1_MOT_POS_SX PB7
+#define PIN1_MOT_POS_SX PB5
 #define PIN2_MOT_POS_SX PB8 
 
 #define PIN1_MOT_ANT_SX PA6
