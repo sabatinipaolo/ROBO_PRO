@@ -16,17 +16,18 @@
 #endif
 
 #ifdef BLACKPILL_F411CE
-#define PIN1_MOT_ANT_DX PB8
-#define PIN2_MOT_ANT_DX PB9
 
-#define PIN1_MOT_POS_DX PB3
-#define PIN2_MOT_POS_DX PB4
+#define PIN1_MOT_ANT_DX PA2
+#define PIN2_MOT_ANT_DX PA3
 
-#define PIN1_MOT_POS_SX PA8
-#define PIN2_MOT_POS_SX PA10
+#define PIN1_MOT_POS_DX PA0
+#define PIN2_MOT_POS_DX PA1
 
-#define PIN1_MOT_ANT_SX PA2
-#define PIN2_MOT_ANT_SX PA0
+#define PIN1_MOT_POS_SX PB5
+#define PIN2_MOT_POS_SX PB8 
+
+#define PIN1_MOT_ANT_SX PA6
+#define PIN2_MOT_ANT_SX PA7
 
 
   #define PIN_WIRE_SDA PB7 //default in wire.h (se cambi valore warning di ridefinizione)
