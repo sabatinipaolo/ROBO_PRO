@@ -4,7 +4,7 @@
 
 void setup() {
   // initialize digital pin LED_BUILTIN as an output.
-  Motore motore(PIN1_MOT_POS_SX , PIN2_MOT_POS_SX);
+  Motore motore(PIN_MOT_PS1 , PIN_MOT_PS2);
   motore.orario(200);
 }
 

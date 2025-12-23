@@ -2,32 +2,32 @@
 #define ROBOTPROPIN_H
 
 #ifdef ARDUINO_MEGA2560
-  #define PIN1_MOT_ANT_DX 2
-  #define PIN2_MOT_ANT_DX 3
+  #define PIN_MOT_AD1 2
+  #define PIN_MOT_AD2 3
 
-  #define PIN1_MOT_POS_DX 4
-  #define PIN2_MOT_POS_DX 5
+  #define PIN_MOT_PD1 4
+  #define PIN_MOT_PD2 5
 
-  #define PIN1_MOT_POS_SX 6
-  #define PIN2_MOT_POS_SX 7
+  #define PIN_MOT_PS1 6
+  #define PIN_MOT_PS2 7
 
-  #define PIN1_MOT_ANT_SX 8
-  #define PIN2_MOT_ANT_SX 9
+  #define PIN_MOT_AS1 8
+  #define PIN_MOT_AS2 9
 #endif
 
 #ifdef BLACKPILL_F411CE
 
-#define PIN1_MOT_ANT_DX PA8    // TIM1_CH1
-#define PIN2_MOT_ANT_DX PA9    // TIM1_CH2
+#define PIN_MOT_AD1 PA8    // TIM1_CH1
+#define PIN_MOT_AD2 PA9    // TIM1_CH2
 
-#define PIN1_MOT_POS_DX PA0    // TIM2_CH1
-#define PIN2_MOT_POS_DX PA1    // TIM2_CH2
+#define PIN_MOT_PD1 PA0    // TIM2_CH1
+#define PIN_MOT_PD2 PA1    // TIM2_CH2
 
-#define PIN1_MOT_POS_SX PA6    // TIM3_CH1
-#define PIN2_MOT_POS_SX PB5    // TIM3_CH2
+#define PIN_MOT_PS1 PA6    // TIM3_CH1
+#define PIN_MOT_PS2 PB5    // TIM3_CH2
 
-#define PIN1_MOT_ANT_SX PB8    // TIM4_CH3
-#define PIN2_MOT_ANT_SX PB9    // TIM4_CH4
+#define PIN_MOT_AS1 PB8    // TIM4_CH3
+#define PIN_MOT_AS2 PB9    // TIM4_CH4
 
 // Encoder
 //  PC0–PC5

@@ -41,10 +41,10 @@ private:
 };
 
 Robot::Robot()
-    : motori{Motore(PIN1_MOT_ANT_DX, PIN2_MOT_ANT_DX),
-             Motore(PIN1_MOT_POS_DX, PIN2_MOT_POS_DX),
-             Motore(PIN1_MOT_POS_SX, PIN2_MOT_POS_SX),
-             Motore(PIN1_MOT_ANT_SX, PIN2_MOT_ANT_SX)
+    : motori{Motore(PIN_MOT_AD1, PIN_MOT_AD2),
+             Motore(PIN_MOT_PD1, PIN_MOT_PD2),
+             Motore(PIN_MOT_PS1, PIN_MOT_PS2),
+             Motore(PIN_MOT_AS1, PIN_MOT_AS2)
 
       },
       _mot_ant_dx(motori[0]),

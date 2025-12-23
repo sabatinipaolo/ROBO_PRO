@@ -24,7 +24,7 @@ void updateEncoder(){
 
 }
 
-  Motore motore(PIN1_MOT_ANT_DX , PIN2_MOT_ANT_DX);
+  Motore motore(PIN_MOT_AD1 , PIN_MOT_AD2);
 void setup() {
   // initialize digital pin LED_BUILTIN as an output.
  pinMode(enc1, INPUT_PULLUP); 
