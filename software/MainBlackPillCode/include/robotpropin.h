@@ -30,8 +30,8 @@
 #define PIN_MOT_AS2 PB9    // TIM4_CH4
 
 // ENCODER - AnteRiore Destro (AD)
-#define PIN_ENC_AD1 PB0    
-#define PIN_ENC_AD2 PB1    
+#define PIN_ENC_AD1 PB12    
+#define PIN_ENC_AD2 PB13    
 
 // ENCODER - Posteriore Destro (PD)  
 #define PIN_ENC_PD1 PB14
@@ -42,8 +42,8 @@
 #define PIN_ENC_PS2 PA7    
 
 // ENCODER - AnteRiore Sinistro (AS)
-#define PIN_ENC_AS1 PB12   
-#define PIN_ENC_AS2 PB13   
+#define PIN_ENC_AS1 PB0   
+#define PIN_ENC_AS2 PB1   
 
 //Seriale 
 #define PIN_UART1 PA2
