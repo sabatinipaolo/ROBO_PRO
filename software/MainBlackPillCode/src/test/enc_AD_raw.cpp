@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include "motori.h"
 
-#define enc1 PB3
-#define enc2 PB4
+#define enc1 PIN_ENC_AD1
+#define enc2 PIN_ENC_AD1
 
 
 volatile int lastEncoded = 0; // Here updated value of encoder store.
@@ -24,7 +24,7 @@ void updateEncoder(){
 
 }
 
-  Motore motore(PIN_MOT_AD1 , PIN_MOT_AD2);
+  Motore motore(PIN_MOT_AD1, PIN_MOT_AD2, PIN_ENC_AD1, PIN_ENC_AD2);
 void setup() {
   // initialize digital pin LED_BUILTIN as an output.
  pinMode(enc1, INPUT_PULLUP); 
