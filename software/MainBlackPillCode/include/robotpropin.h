@@ -29,16 +29,33 @@
 #define PIN_MOT_AS1 PB8    // TIM4_CH3
 #define PIN_MOT_AS2 PB9    // TIM4_CH4
 
-// Encoder
-//  PC0–PC5
-//  PA4, PA15
-// UART
-//  PA2 - PA3
-// USB CDC 
-//  PA10 PA11
+// ENCODER - AnteRiore Destro (AD)
+#define PIN_ENC_AD1 PB0    
+#define PIN_ENC_AD2 PB1    
 
-  #define PIN_WIRE_SDA PB7 //default in wire.h (se cambi valore warning di ridefinizione)
-  #define PIN_WIRE_SCL PB6 //default in wire.h (se cambi valore warning di ridefinizione)
+// ENCODER - Posteriore Destro (PD)  
+#define PIN_ENC_PD1 PB14
+#define PIN_ENC_PD2 PB15
+
+// ENCODER - Posteriore Sinistro (PS)
+#define PIN_ENC_PS1 PA5    
+#define PIN_ENC_PS2 PA7    
+
+// ENCODER - AnteRiore Sinistro (AS)
+#define PIN_ENC_AS1 PB12   
+#define PIN_ENC_AS2 PB13   
+
+//Seriale 
+#define PIN_UART1 PA2
+#define PIN_UART2 PA3
+//Serial usb CDC 
+#define PIN_CDC_1 PA10  
+#define PIN_CDC_2 PA11
+
+
+#define PIN_WIRE_SDA PB7 //default in wire.h (se cambi valore warning di ridefinizione)
+#define PIN_WIRE_SCL PB6 //default in wire.h (se cambi valore warning di ridefinizione)
+
 #endif 
 
 
