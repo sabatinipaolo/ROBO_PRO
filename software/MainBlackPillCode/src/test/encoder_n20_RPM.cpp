@@ -13,7 +13,7 @@ unsigned long lastTime = 0;
 long lastCount = 0;
 float rpm = 0;
 
-Motore motoPD(PIN1_MOT_POS_DX, PIN2_MOT_POS_DX);
+Motore motoPD(PIN_MOT_PD1, PIN_MOT_PD2);
 
 
 void encoderISR()
