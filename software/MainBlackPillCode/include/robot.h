@@ -41,10 +41,10 @@ private:
 };
 
 Robot::Robot()
-    : motori{Motore(PIN_MOT_AD1, PIN_MOT_AD2),
-             Motore(PIN_MOT_PD1, PIN_MOT_PD2),
-             Motore(PIN_MOT_PS1, PIN_MOT_PS2),
-             Motore(PIN_MOT_AS1, PIN_MOT_AS2)
+    : motori{Motore(PIN_MOT_AD1, PIN_MOT_AD2 ,PIN_ENC_AD1 ,PIN_ENC_AD2),
+             Motore(PIN_MOT_PD1, PIN_MOT_PD2 ,PIN_ENC_PD1 ,PIN_ENC_PD2),
+             Motore(PIN_MOT_PS1, PIN_MOT_PS2 ,PIN_ENC_PS1 ,PIN_ENC_PS2),
+             Motore(PIN_MOT_AS1, PIN_MOT_AS2 ,PIN_ENC_AS1 ,PIN_ENC_AS2)
 
       },
       _mot_ant_dx(motori[0]),
