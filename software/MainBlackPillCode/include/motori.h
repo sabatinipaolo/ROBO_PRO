@@ -10,6 +10,11 @@ class Motore
 {
 public:
     Motore(int pinA, int pinB);
+    
+    Motore(const Motore&) = delete;             //impedisce copie di oggetti motori, Motore m(m2) (costruttore copia) genera errore
+    Motore& operator=(const Motore&) = delete;  // m1=m2 genera errore
+                                                // vedi qui: https://www.stroustrup.com/C++11FAQ.html#default
+    
     void orario(int pwm);
     void antiorario(int pwm);
     void stop();
