@@ -60,14 +60,12 @@ Motore::Motore(int pin1, int pin2, int pin_enc1, int pin_enc2)
 
 void Motore::antiorario(int pwm)
 {
-    analogWrite(_pin1, pwm);
-    analogWrite(_pin2, LOW);
+    muovi(pwm);
 }
 
 void Motore::orario(int pwm)
 {
-    analogWrite(_pin1, LOW);
-    analogWrite(_pin2, pwm);
+    muovi(-pwm);
 }
 
 void Motore::stop()
@@ -76,23 +74,23 @@ void Motore::stop()
     analogWrite(_pin2, LOW);
 }
 
-void Motore::muovi(int rpm)
+void Motore::muovi(int pwm)
 {
-    this->_rpm=rpm;  //usato this in previsione di modificare i nomi degli attributi
-    if (rpm > 0)
+
+    if (pwm >= 0)
     {
-        int pwm = rpm_to_pwm(rpm);
-        orario(pwm);
+        //antiorario(pwm);
+        analogWrite(_pin1, pwm);
+        analogWrite(_pin2, LOW);
+
     }
-    else if (rpm < 0)
+    else if (pwm < 0)
     {
-        int pwm = rpm_to_pwm(rpm);
-        antiorario(-pwm);
+        //orario(-pwm);
+        analogWrite(_pin1, LOW);
+        analogWrite(_pin2, -pwm);
     }
-    else
-    {
-        stop();
-    }
+
 }
 
 void Motore::test_avanti_indietro(int pwm)
