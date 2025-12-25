@@ -118,11 +118,11 @@ void Motore::ISR_encoder()
   // Determina la direzione usando il canale B
   if (digitalRead(_pin_enc2) == HIGH)
   {
-    encoderCount++;
+    encoderCount--;
   }
   else
   {
-    encoderCount--;
+    encoderCount++;
   }
 }
 
