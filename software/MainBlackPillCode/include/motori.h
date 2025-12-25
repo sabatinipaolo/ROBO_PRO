@@ -10,6 +10,11 @@ class Motore
 {
 public:
     Motore(int pinA, int pinB);
+    
+    Motore(const Motore&) = delete;             //impedisce copie di oggetti motori, Motore m(m2) (costruttore copia) genera errore
+    Motore& operator=(const Motore&) = delete;  // m1=m2 genera errore
+                                                // vedi qui: https://www.stroustrup.com/C++11FAQ.html#default
+    
     void orario(int pwm);
     void antiorario(int pwm);
     void stop();
@@ -33,14 +38,12 @@ Motore::Motore(int pin1, int pin2)
 
 void Motore::antiorario(int pwm)
 {
-    analogWrite(_pin1, pwm);
-    analogWrite(_pin2, LOW);
+    muovi(pwm);
 }
 
 void Motore::orario(int pwm)
 {
-    analogWrite(_pin1, LOW);
-    analogWrite(_pin2, pwm);
+    muovi(-pwm);
 }
 
 void Motore::stop()
@@ -49,23 +52,23 @@ void Motore::stop()
     analogWrite(_pin2, LOW);
 }
 
-void Motore::muovi(int velocita)
+void Motore::muovi(int pwm)
 {
 
-    if (velocita > 0)
+    if (pwm >= 0)
     {
-        int pwm = map(velocita, 0, 100, MIN_PWM, 255);
-        orario(pwm);
+        //antiorario(pwm);
+        analogWrite(_pin1, pwm);
+        analogWrite(_pin2, LOW);
+
     }
-    else if (velocita < 0)
+    else if (pwm < 0)
     {
-        int pwm = map(-velocita, 0, 100, MIN_PWM, 255);
-        antiorario(-pwm);
+        //orario(-pwm);
+        analogWrite(_pin1, LOW);
+        analogWrite(_pin2, -pwm);
     }
-    else
-    {
-        stop();
-    }
+
 }
 
 void Motore::test_avanti_indietro(int pwm)
