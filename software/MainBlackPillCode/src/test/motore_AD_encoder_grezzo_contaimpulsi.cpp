@@ -16,7 +16,7 @@ long last_time=0;
 void setup(){
     m.stop();
     Serial.begin(115200);
-    m.muovi(+300);
+    m.antiorario(255);
     attachInterrupt(digitalPinToInterrupt(PIN_ENC_AD1), ISR_encoder_Motore, RISING);
 }
 
