@@ -5,12 +5,6 @@
 #include "robotpropin.h"
 
 
-#include <Adafruit_SSD1306.h>
-#include <Adafruit_GFX.h>
-#include <Wire.h>
-#ifdef HAS_OLED_DISPLAY
-    extern Adafruit_SSD1306 display;
-#endif
 
 constexpr float radice2_su2 = 0.70710678118654752440084436210485;
 constexpr float pi = 3.14159265358979323846;
@@ -24,10 +18,15 @@ public:
     void trasla(float alfa, int velocita);
     void stop();
 
-    void muovi_nord_est(int velocita);
-    void muovi_sud_ovest(int velocita);
-    void muovi_sud_est(int velocita);
-    void muovi_nord_ovest(int velocita);
+    void muovi_nord(int pwm);
+    void muovi_nord_est(int pwm);
+    void muovi_est(int pwm);
+    void muovi_sud_est(int pwm);
+    void muovi_sud(int pwm);
+    void muovi_sud_ovest(int pwm );
+    void muovi_ovest(int pwm);
+    
+    void muovi_nord_ovest(int pwm);
 
     Motore motori[4];
     Motore &_mot_ant_dx; // alias per motore anteriore destro
@@ -65,14 +64,7 @@ void Robot::inizializza()
 
 void Robot::trasla(float alfa, int velocita)
 {   
-    #ifdef HAS_OLED_DISPLAY
-        display.clearDisplay();
-        display.setCursor(0, 0); // Start at top-left corner
-        display.print(alfa);
-        display.print(" ");
-        display.print(velocita);
-        display.display();
-    #endif
+
     
     Serial.print(" Robot.trasla : alfa= ");
     Serial.print(alfa);
@@ -104,31 +96,70 @@ void Robot::stop()
     _mot_pos_sx.stop();
 }
 
-void Robot::muovi_nord_est(int velocita)
+//            N
+//       NO   |   NE
+//          \   /
+//     O   --   --   E
+//          /   \
+//       SO   |   SE
+//            S  
+void Robot::muovi_nord(int pwm){
+    _mot_ant_dx.orario(pwm);
+    _mot_pos_dx.orario(pwm);
+    _mot_pos_sx.antiorario(pwm);
+    _mot_ant_sx.antiorario(pwm);
+    
+}
+void Robot::muovi_nord_est(int pwm)
 {
     _mot_ant_dx.stop();
-    _mot_pos_dx.muovi(velocita);
-    _mot_ant_sx.muovi(-velocita);
+    _mot_pos_dx.orario(pwm);
     _mot_pos_sx.stop();
-}
+    _mot_ant_sx.antiorario(pwm);
 
-void Robot::muovi_sud_ovest(int velocita)
-{
-    muovi_nord_est(-velocita);
 }
-
-void Robot::muovi_sud_est(int velocita)
+void Robot::muovi_est(int pwm)
 {
-    _mot_ant_dx.muovi(-velocita);
+    _mot_ant_dx.antiorario(pwm);
+    _mot_pos_dx.orario(pwm);
+    _mot_pos_sx.orario(pwm);
+    _mot_ant_sx.antiorario(pwm);
+
+}
+void Robot::muovi_sud_est(int pwm)
+{
+    _mot_ant_dx.antiorario(pwm);
     _mot_pos_dx.stop();
+    _mot_pos_sx.orario(pwm);
     _mot_ant_sx.stop();
-    _mot_pos_sx.muovi(velocita);
+}
+void Robot::muovi_sud(int pwm){
+    _mot_ant_dx.antiorario(pwm);
+    _mot_pos_dx.antiorario(pwm);
+    _mot_pos_sx.orario(pwm);
+    _mot_ant_sx.orario(pwm);
+}
+void Robot::muovi_sud_ovest(int pwm)
+{
+    _mot_ant_dx.stop();
+    _mot_pos_dx.antiorario(pwm);
+    _mot_pos_sx.stop();
+    _mot_ant_sx.orario(pwm);
+}
+void Robot::muovi_ovest(int pwm){
+    _mot_ant_dx.orario(pwm);
+    _mot_pos_dx.antiorario(pwm);
+    _mot_pos_sx.antiorario(pwm);
+    _mot_ant_sx.orario(pwm);
+}
+void Robot::muovi_nord_ovest(int pwm)
+{
+    _mot_ant_dx.orario(pwm);
+    _mot_pos_dx.stop();
+    _mot_pos_sx.antiorario(pwm);
+    _mot_ant_sx.stop();
 }
 
-void Robot::muovi_nord_ovest(int velocita)
-{
-    muovi_sud_est(-velocita);
-}
 
 void Robot::test_motori()
 {
