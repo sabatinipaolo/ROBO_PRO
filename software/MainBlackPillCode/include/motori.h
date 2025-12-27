@@ -7,7 +7,11 @@
 #define MIN_PWM 80
 #define MAX_PWM 255
 
-#define PPR 210   //pulse per revolutio 7 ppr * 30 gear ratio  
+//#define PPR 210   //pulse per revolutio 7 ppr * 30 gear ratio  
+
+constexpr float IMPULSI_PER_GIRO = 30*7.0f ;
+constexpr float INTERVALLO_CAMPIONAMENTO_RPM = 10.0f; 
+constexpr float ALPHA = 0.50f;  //filtro anti rumore se serve 
 
 class Motore
 {
@@ -28,12 +32,6 @@ public:
     int rpm_to_pwm(int rpm);
     void ISR_encoder();
     void aggiorna_rpm();
-
-    
-    
-    volatile long encoderCount = 0;    
-    unsigned long lastTime = 0;
-    long lastCount = 0;
     float _rpm=0;
 
     private:
@@ -43,9 +41,13 @@ public:
     int _pin_enc2;
     
   
-    int _rpm_target;
 
+    //variabili per calcolo RPM
+    volatile unsigned long conta_impulsi_encoder = 0;
+             unsigned long ultimo_orario_campionamento = millis();
+             unsigned long ultimo_conteggio_impulsi =0 ;
 };
+
 
 Motore::Motore(int pin1, int pin2, int pin_enc1, int pin_enc2)
     : _pin1(pin1), _pin2(pin2), _pin_enc1(pin_enc1),_pin_enc2(pin_enc2)
@@ -55,7 +57,7 @@ Motore::Motore(int pin1, int pin2, int pin_enc1, int pin_enc2)
     pinMode(_pin1, OUTPUT);
     pinMode(_pin2, OUTPUT);
     stop();
-    
+   
 };
 
 void Motore::antiorario(int pwm)
@@ -76,7 +78,6 @@ void Motore::stop()
 
 void Motore::muovi(int pwm)
 {
-
     if (pwm >= 0)
     {
         //antiorario(pwm);
@@ -89,7 +90,7 @@ void Motore::muovi(int pwm)
         //orario(-pwm);
         analogWrite(_pin1, LOW);
         analogWrite(_pin2, -pwm);
-    }
+    };
 
 }
 
@@ -116,35 +117,40 @@ void Motore::ISR_encoder()
   // Determina la direzione usando il canale B
   if (digitalRead(_pin_enc2) == HIGH)
   {
-    encoderCount++;
+    conta_impulsi_encoder++;
   }
   else
   {
-    encoderCount--;
+    conta_impulsi_encoder--;
   }
 }
 
 void Motore::aggiorna_rpm()
 {
-    unsigned long currentTime = millis();
+  unsigned long now = millis();
+  unsigned long dt = now - ultimo_orario_campionamento;
+
+  if (dt >= INTERVALLO_CAMPIONAMENTO_RPM) {
+
+    ultimo_orario_campionamento = now;
 
     noInterrupts();
-    long count = encoderCount;
+    unsigned long cnt = conta_impulsi_encoder;
     interrupts();
 
-    long delta_impulsi = count - lastCount;
-    
-    float dt = (currentTime - lastTime) / 1000.0;
+    long  delta = cnt - ultimo_conteggio_impulsi;
+    ultimo_conteggio_impulsi = cnt;
 
-    _rpm = (delta_impulsi / (float)PPR) * (60.0 / dt);
-    
-    // float Dt_in_ms = (currentTime - lastTime);
+    float rpm_raw =
+      (float)delta * 60000.0f / (IMPULSI_PER_GIRO * dt);
 
-    // _rpm = (delta_impulsi / PPR ) / (Dt_in_ms / (60*1000));
+    _rpm = rpm_raw;
 
-    lastCount = count;
-    lastTime = currentTime;
-
+    //_rpm += ALPHA * (rpm_raw - _rpm);  //filtro misura se occorre 
+  }
 }
+
+
+
 
 #endif // MOTORI_H
