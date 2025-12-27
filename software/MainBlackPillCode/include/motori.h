@@ -139,6 +139,12 @@ void Motore::ISR_encoder()
 }
 void Motore::resetRPM()
 {
+// resetRPM() va chiamata solo quando:
+// - il motore parte da fermo
+// - il motore si ferma
+// - si cambia direzione
+// - si cambia modalità di controllo
+
   noInterrupts();
   ultimo_conteggio_impulsi = conta_impulsi_encoder;
   interrupts();
