@@ -31,10 +31,13 @@ public:
 
     int rpm_to_pwm(int rpm);
     void ISR_encoder();
+    void resetRPM();
+
     void aggiorna_rpm();
     float _rpm=0;
 
     private:
+    int _pwm=0;
     int _pin1;
     int _pin2;
     int _pin_enc1;
@@ -72,15 +75,24 @@ void Motore::orario(int pwm)
 
 void Motore::stop()
 {
+    _pwm=0;
     analogWrite(_pin1, LOW);
     analogWrite(_pin2, LOW);
 }
 
 void Motore::muovi(int pwm)
-{
+{//TODO: ottimizzare 
+  if (_pwm == 0 && pwm != 0) {
+    resetRPM();   // partenza
+  }
+
+  if ((_pwm > 0 && pwm < 0) || (_pwm < 0 && pwm > 0)) {
+    resetRPM();   // cambio direzione
+  };
     if (pwm >= 0)
     {
         //antiorario(pwm);
+        _pwm=pwm;
         analogWrite(_pin1, pwm);
         analogWrite(_pin2, LOW);
 
@@ -88,6 +100,7 @@ void Motore::muovi(int pwm)
     else if (pwm < 0)
     {
         //orario(-pwm);
+         _pwm=pwm;
         analogWrite(_pin1, LOW);
         analogWrite(_pin2, -pwm);
     };
@@ -123,6 +136,15 @@ void Motore::ISR_encoder()
   {
     conta_impulsi_encoder--;
   }
+}
+void Motore::resetRPM()
+{
+  noInterrupts();
+  ultimo_conteggio_impulsi = conta_impulsi_encoder;
+  interrupts();
+
+  ultimo_orario_campionamento = millis();
+  //rpm_inizializzata = false;
 }
 
 void Motore::aggiorna_rpm()
