@@ -18,14 +18,14 @@ void setup()
     attachInterrupt(digitalPinToInterrupt(PIN_ENC_AS1), ISR_encoder_Motore, RISING);
         
     m.muovi(255);
-    delay(5000);
+    delay(12);
     float rpm_min=10000;
     float rpm_max=-10000;
-    for (int misura = 0; misura < 1000000000; misura++)
+    for (int misura = 0; misura < 10; misura++)
     {
          rpm_min=10000;
          rpm_max=-10000;
-        for (int i=0 ;i <1;i++){
+        for (int i=0 ;i <10;i++){
 
                 m.aggiorna_rpm();
                 if (m._rpm> rpm_max) 
@@ -34,7 +34,7 @@ void setup()
                 if (m._rpm < rpm_min)
                     rpm_min = m._rpm;
 
-                delay(133);
+                delay(1313);
 
         };
         Serial.println(misura);
