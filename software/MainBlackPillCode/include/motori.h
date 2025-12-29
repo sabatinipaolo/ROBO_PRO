@@ -36,13 +36,12 @@ public:
     void aggiorna_rpm();
     float _rpm=0;
 
-    private:
     int _pwm=0;
     int _pin1;
     int _pin2;
     int _pin_enc1;
     int _pin_enc2;
-    
+private:
   
 
     //variabili per calcolo RPM
