@@ -35,6 +35,7 @@ public:
 
     void aggiorna_rpm();
     float _rpm=0;
+    bool _rpm_valida=false;
 
     int _pwm=0;
     int _pin1;
@@ -59,6 +60,7 @@ Motore::Motore(int pin1, int pin2, int pin_enc1, int pin_enc2)
     pinMode(_pin1, OUTPUT);
     pinMode(_pin2, OUTPUT);
     stop();
+    aggiorna_rpm();
    
 };
 
@@ -88,7 +90,9 @@ void Motore::muovi(int pwm)
   if ((_pwm > 0 && pwm < 0) || (_pwm < 0 && pwm > 0)) {
     resetRPM();   // cambio direzione
   };
-    if (pwm >= 0)
+    if(pwm==0 ) stop();
+    else
+    if (pwm > 0)
     {
         //antiorario(pwm);
         _pwm=pwm;
@@ -147,20 +151,14 @@ void Motore::resetRPM()
   noInterrupts();
   ultimo_conteggio_impulsi = conta_impulsi_encoder;
   interrupts();
+  _rpm_valida = false;
 
   ultimo_orario_campionamento = millis();
-  //rpm_inizializzata = false;
+
 }
 
 void Motore::aggiorna_rpm()
 {
-  unsigned long now = millis();
-  unsigned long dt = now - ultimo_orario_campionamento;
-
-  if (dt >= INTERVALLO_CAMPIONAMENTO_RPM) {
-
-    ultimo_orario_campionamento = now;
-
     noInterrupts();
     unsigned long cnt = conta_impulsi_encoder;
     interrupts();
@@ -169,15 +167,17 @@ void Motore::aggiorna_rpm()
     ultimo_conteggio_impulsi = cnt;
 
     float rpm_raw =
-      (float)delta * 60000.0f / (IMPULSI_PER_GIRO * dt);
+      (float)delta * 60000.0f / (IMPULSI_PER_GIRO * INTERVALLO_CAMPIONAMENTO_RPM);
 
-    _rpm = rpm_raw;
+    //_rpm = rpm_raw;
 
-    //_rpm += ALPHA * (rpm_raw - _rpm);  //filtro misura se occorre 
-  }
+    _rpm += ALPHA * (rpm_raw - _rpm);  //filtro misura se occorre 
+  
+    _rpm_valida = true;
+
 }
 
 
-
+  
 
 #endif // MOTORI_H
