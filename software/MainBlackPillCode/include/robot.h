@@ -4,7 +4,9 @@
 #include "motori.h"
 #include "robotpropin.h"
 
-
+#ifdef HAS_OLED_DISPLAY
+    #include "oled.h"
+#endif
 
 constexpr float radice2_su2 = 0.70710678118654752440084436210485;
 constexpr float pi = 3.14159265358979323846;
@@ -48,19 +50,26 @@ public:
     
     HardwareTimer *Timer_per_rpm = new HardwareTimer(TIM5);  //TODO: definire alias per TIM5 e spostare in robopin.h 
     void test_motori();
-private:
+
+#ifdef HAS_OLED_DISPLAY
+    Oled oled ;
+#endif
+    
 };
+
 
 Motore Robot::motori[] = {Motore(PIN_MOT_AD1, PIN_MOT_AD2, PIN_ENC_AD1, PIN_ENC_AD2),
                           Motore(PIN_MOT_PD1, PIN_MOT_PD2, PIN_ENC_PD1, PIN_ENC_PD2),
                           Motore(PIN_MOT_PS1, PIN_MOT_PS2, PIN_ENC_PS1, PIN_ENC_PS2),
-                          Motore(PIN_MOT_AS1, PIN_MOT_AS2, PIN_ENC_AS1, PIN_ENC_AS2)};                         
+                          Motore(PIN_MOT_AS1, PIN_MOT_AS2, PIN_ENC_AS1, PIN_ENC_AS2)
+                         };                         
 Motore & Robot::_mot_ant_dx=motori[0];
 Motore & Robot::_mot_pos_dx=motori[1];
 Motore & Robot::_mot_pos_sx=motori[2];
 Motore & Robot::_mot_ant_sx=motori[3];
 
-Robot::Robot()
+Robot::Robot() 
+        : oled()
 { // ISR sugli encoder
     //TODO: definire getter per pin encoder nei motori trasformare in loop
     //TODO: i pin degli encoder sono deginiti INPUT_PULLUP nei Motori: e' il caso di spostare qui?
@@ -92,7 +101,14 @@ void Robot::inizializza()
 
 void Robot::trasla(float alfa, int velocita)
 {   
-
+    #ifdef HAS_OLED_DISPLAY
+        oled.clearDisplay();
+        oled.setCursor(0, 0); // Start at top-left corner
+        oled.print(alfa);
+        oled.print(" ");
+        oled.print(velocita);
+        oled.display();
+    #endif
     
     Serial.print(" Robot.trasla : alfa= ");
     Serial.print(alfa);
