@@ -70,7 +70,7 @@ Robot::Robot()
     attachInterrupt(digitalPinToInterrupt(PIN_ENC_PS1), ISR_encoder_Motore_PS, RISING);
     attachInterrupt(digitalPinToInterrupt(PIN_ENC_AS1), ISR_encoder_Motore_AS, RISING);
 
-  Timer_per_rpm->setOverflow(100, HERTZ_FORMAT); // 10 ms 
+  Timer_per_rpm->setOverflow( 1000 / INTERVALLO_CAMPIONAMENTO_RPM , HERTZ_FORMAT); 
   Timer_per_rpm->attachInterrupt(aggiorna_RPM_dei_quattro_motori);
   Timer_per_rpm->resume();
 
