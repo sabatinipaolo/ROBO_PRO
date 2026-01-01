@@ -4,12 +4,8 @@
 #include "motori.h"
 #include "robotpropin.h"
 
-
-#include <Adafruit_SSD1306.h>
-#include <Adafruit_GFX.h>
-#include <Wire.h>
 #ifdef HAS_OLED_DISPLAY
-    extern Adafruit_SSD1306 display;
+    #include "oled.h"
 #endif
 
 constexpr float radice2_su2 = 0.70710678118654752440084436210485;
@@ -36,7 +32,10 @@ public:
     Motore &_mot_ant_sx; // alias per motore anteriore sinistro
 
     void test_motori();
-private:
+
+#ifdef HAS_OLED_DISPLAY
+    Oled oled ;
+#endif
     
 };
 
@@ -51,7 +50,7 @@ Robot::Robot()
       _mot_pos_dx(motori[1]),
       _mot_pos_sx(motori[2]),
       _mot_ant_sx(motori[3])
-
+      ,oled()
 {
     stop();
  
@@ -66,12 +65,12 @@ void Robot::inizializza()
 void Robot::trasla(float alfa, int velocita)
 {   
     #ifdef HAS_OLED_DISPLAY
-        display.clearDisplay();
-        display.setCursor(0, 0); // Start at top-left corner
-        display.print(alfa);
-        display.print(" ");
-        display.print(velocita);
-        display.display();
+        oled.clearDisplay();
+        oled.setCursor(0, 0); // Start at top-left corner
+        oled.print(alfa);
+        oled.print(" ");
+        oled.print(velocita);
+        oled.display();
     #endif
     
     Serial.print(" Robot.trasla : alfa= ");
