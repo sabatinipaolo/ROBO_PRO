@@ -4,14 +4,15 @@
 #include <Arduino.h>
 #include "robotpropin.h"
 
+
 #define MIN_PWM 80
 #define MAX_PWM 255
 
 //#define PPR 210   //pulse per revolutio 7 ppr * 30 gear ratio  
 
 constexpr float IMPULSI_PER_GIRO = 30*7.0f ;
-constexpr float INTERVALLO_CAMPIONAMENTO_RPM = 10.0f; 
-constexpr float ALPHA = 0.50f;  //filtro anti rumore se serve 
+constexpr float INTERVALLO_CAMPIONAMENTO_RPM = 20.0f; 
+constexpr float ALPHA = 0.20f;  //filtro anti rumore se serve 
 
 class Motore
 {
@@ -35,14 +36,29 @@ public:
 
     void aggiorna_rpm();
     float _rpm=0;
+   
     bool _rpm_valida=false;
-
+    float _rpm_target;
     int _pwm=0;
+    int _pwm_base=0;
+    
     int _pin1;
     int _pin2;
     int _pin_enc1;
     int _pin_enc2;
-private:
+
+    #ifdef LOGGA_IMPULSI
+
+        long int log_impulsi[256];
+        u_int8_t indice_impulsi = 0;
+
+    #endif
+    #ifdef LOGGA_RPM
+        float log_rpm[256];
+        u_int8_t indice_rpm;
+    #endif
+
+  private:
   
 
     //variabili per calcolo RPM
@@ -125,7 +141,10 @@ void Motore::test_avanti_indietro(int pwm)
 int Motore::rpm_to_pwm(int rpm)
 {   //TODO: ragionarci sopra...
     if (rpm==0) return 0;    
-    return map(rpm,0,500,MIN_PWM,MAX_PWM);
+    return (int) map( rpm , 0, 400,0,255);
+    return (int) 2.13*rpm - 513.5;  //a vuoto 
+    //return int (1.04419f*rpm - 65.0);  //interpolazione della misura su terreno ....
+    //return int (1.28*rpm - 274.0);  //interpolazione della misura a vuoto...
 };
 
 void Motore::ISR_encoder()
@@ -165,14 +184,26 @@ void Motore::aggiorna_rpm()
 
     long  delta = cnt - ultimo_conteggio_impulsi;
     ultimo_conteggio_impulsi = cnt;
+    
+    #ifdef LOGGA_IMPULSI
+    log_impulsi[indice_impulsi  ] = delta;
+    indice_impulsi++;
+    #endif
 
     float rpm_raw =
       (float)delta * 60000.0f / (IMPULSI_PER_GIRO * INTERVALLO_CAMPIONAMENTO_RPM);
 
     //_rpm = rpm_raw;
+    //_rpm += ALPHA * (rpm_raw - _rpm);  //filtro misura se occorre 
 
-    _rpm += ALPHA * (rpm_raw - _rpm);  //filtro misura se occorre 
-  
+    _rpm += ALPHA * (rpm_raw - _rpm);
+
+    #ifdef LOGGA_RPM
+    log_rpm[indice_rpm  ] = _rpm;
+    indice_rpm++;
+    #endif
+
+    
     _rpm_valida = true;
 
 }
