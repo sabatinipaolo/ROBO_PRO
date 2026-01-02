@@ -14,6 +14,7 @@ public:
 #define OLED_RESET -1
     Oled() : Adafruit_SSD1306(OLED_RESET) {};
     bool begin();
+    void stampa4rpm();
 
 private:
 };
@@ -38,6 +39,27 @@ bool Oled::begin()
     setTextColor(SSD1306_WHITE); // Draw white text
 
     return true;
+}
+
+void Oled::stampa4rpm(){
+    clearDisplay();
+    setCursor(0, 0); 
+
+    
+    char str[5];
+    dtostrf(Controller::_mot_ant_sx._rpm, 5, 0, str);
+    print(str);
+
+    dtostrf(Controller::_mot_ant_dx._rpm, 5, 0, str);
+    println(str);
+
+    dtostrf(Controller::_mot_pos_sx._rpm, 5, 0, str);
+    print(str);
+
+    dtostrf(Controller::_mot_pos_dx._rpm, 5, 0, str);
+    println(str);
+
+    display();
 }
 
 #endif
