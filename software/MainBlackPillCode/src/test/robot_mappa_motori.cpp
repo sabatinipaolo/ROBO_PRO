@@ -1,9 +1,8 @@
 #include <Arduino.h>
-#include "robot.h"
-#define PWM_MIN 120
+#include "controller.h"
+#define PWM_MIN 80
 
-Robot r;
-
+Controller c;
 
 float pwm [ 255 ];
 float minimo [ 255 ];
@@ -25,8 +24,8 @@ void setup()
 {
 
   Serial.begin(115200);
-  while (!Serial1)
-    ;
+//   while (!Serial1)
+//     ;
   Serial.println("Starting program ");    
   
   for (int i = 10; i>0;i--){
@@ -39,7 +38,7 @@ void setup()
     
 for (int index_m=0;index_m<1;index_m++){
     
-    Motore &m = r.motori[index_m];
+    Motore &m = c.motori[index_m];
 
     Serial.println("==============================");
     Serial.println( index_m );
@@ -49,9 +48,9 @@ for (int index_m=0;index_m<1;index_m++){
          pwm <= 255;
          j++, pwm += 5)
     {
-    
-        m.muovi( pwm ); 
-        delay(5000);
+        for (int i=0; i<4;i++) c.motori[i].muovi(pwm);
+        //m.muovi( pwm ); 
+        delay(2000);
 
         minimo[j]=10000; maximo[j]=-10000; medio[j]=0;
         int n_misure = 0;
@@ -65,7 +64,7 @@ for (int index_m=0;index_m<1;index_m++){
                 medio[j]+=rpm;
                 n_misure ++; 
 
-                delay(11);
+                delay(100);
              };
         };
 
@@ -73,8 +72,8 @@ for (int index_m=0;index_m<1;index_m++){
 
         stampa(j,pwm);
         
-        m.stop();
-        delay(500);
+        for (int i=0; i<4;i++) c.motori[i].stop();
+        delay(2000);
 
 
 
@@ -87,7 +86,7 @@ void loop(){
   
 for (int index_m=0;index_m<1;index_m++){
     
-    Motore &m = r.motori[index_m];
+    Motore &m = c.motori[index_m];
 
     Serial.println("============VIUALIZZO==================");
     Serial.println( index_m );
