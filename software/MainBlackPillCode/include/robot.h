@@ -3,6 +3,7 @@
 
 #include "motori.h"
 #include "robotpropin.h"
+#include "controller.h"
 
 #ifdef HAS_OLED_DISPLAY
     #include "oled.h"
@@ -54,7 +55,7 @@ public:
 #ifdef HAS_OLED_DISPLAY
     Oled oled ;
 #endif
-    
+    Controller controller;
 };
 
 
@@ -69,7 +70,7 @@ Motore & Robot::_mot_pos_sx=motori[2];
 Motore & Robot::_mot_ant_sx=motori[3];
 
 Robot::Robot() 
-        : oled()
+        : oled() , controller(motori)
 { // ISR sugli encoder
     //TODO: definire getter per pin encoder nei motori trasformare in loop
     //TODO: i pin degli encoder sono deginiti INPUT_PULLUP nei Motori: e' il caso di spostare qui?
