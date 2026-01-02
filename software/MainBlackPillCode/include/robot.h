@@ -56,6 +56,7 @@ Robot::Robot()
 void Robot::inizializza()
 {
     stop();
+    oled.begin();
 
 }
 
