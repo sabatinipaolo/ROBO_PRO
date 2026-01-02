@@ -8,11 +8,11 @@
 #define MIN_PWM 80
 #define MAX_PWM 255
 
-//#define PPR 210   //pulse per revolutio 7 ppr * 30 gear ratio  
-
-constexpr float IMPULSI_PER_GIRO = 30*7.0f ;
-constexpr float INTERVALLO_CAMPIONAMENTO_RPM = 20.0f; 
-constexpr float ALPHA = 0.20f;  //filtro anti rumore se serve 
+//TODO: sono define che dovrebbero essere spostati in controller
+// ma vengono usate anche qui: cattivo design?
+#define IMPULSI_PER_GIRO  (30*7.0f) 
+#define INTERVALLO_CAMPIONAMENTO_RPM  20 // us 
+#define ALPHA  0.20f  //filtro anti rumore se serve 
 
 class Motore
 {
@@ -53,10 +53,7 @@ public:
         u_int8_t indice_impulsi = 0;
 
     #endif
-    #ifdef LOGGA_RPM
-        float log_rpm[256];
-        u_int8_t indice_rpm;
-    #endif
+
 
   private:
   
@@ -159,8 +156,9 @@ void Motore::ISR_encoder()
     conta_impulsi_encoder--;
   }
 }
+
 void Motore::resetRPM()
-{
+{//TODO: spostare in controller?
 // resetRPM() va chiamata solo quando:
 // - il motore parte da fermo
 // - il motore si ferma
