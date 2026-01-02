@@ -7,7 +7,7 @@ Robot rob;
 
 void setup()
 {
-    rob.controller._motori[3].muovi(200);
+    rob.controller.motori[3].muovi(200);
 }
 
 
