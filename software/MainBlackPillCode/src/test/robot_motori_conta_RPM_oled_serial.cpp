@@ -7,22 +7,38 @@ Robot rob ;
 
 void setup(){
     rob.inizializza();
+
     Serial.begin(115200);
-  
-    
-    delay(1000); // Give some time to the Serial Monitor to start
+
+    { // starting serial e programma
+        Serial.begin(115200);
+        while (!Serial1)
+            ;
+        Serial.println("Starting program ");
+
+        for (int i = 10; i > 0; i--)
+        {
+            Serial.print("inizio misura tra ");
+            Serial.println(i);
+            delay(333);
+        };
+    }
     
     Serial.println("Setup started");
-    float target= 230.0F;
+    float target= 350.0F;
+    
+    Serial.print("pwm base= ");
+    Serial.print(rob.controller._mot_ant_dx.rpm_to_pwm(target));
+
     int pwm_base= rob.controller._mot_ant_dx.rpm_to_pwm(target);
-    rob.controller._mot_ant_dx._rpm_target=(230);
+    rob.controller._mot_ant_dx._rpm_target=(target);
     rob.controller._mot_ant_dx.muovi(pwm_base);
 
-    rob.controller._mot_ant_sx._rpm_target=(230);
+    rob.controller._mot_ant_sx._rpm_target=(target);
     rob.controller._mot_ant_sx.muovi( pwm_base);
-    rob.controller._mot_pos_sx._rpm_target=(230);
+    rob.controller._mot_pos_sx._rpm_target=(target);
     rob.controller._mot_pos_sx.muovi( pwm_base);
-    rob.controller._mot_pos_dx._rpm_target=(230);
+    rob.controller._mot_pos_dx._rpm_target=(target);
     rob.controller._mot_pos_dx.muovi( pwm_base);
 }
 

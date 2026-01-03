@@ -4,6 +4,29 @@
 
 #include <QuickPID.h>
 #include "motori.h"
+//#define LOGGA_PID
+#ifdef LOGGA_PID
+   static float m_AD_log_rpm[1024];
+   static float m_PD_log_rpm[1024];
+   static float m_PS_log_rpm[1024];
+   static float m_AS_log_rpm[1024];
+ 
+   static float m_AD_log_otuput_pid[1024];
+   static float m_PD_log_otuput_pid[1024];
+   static float m_PS_log_otuput_pid[1024];
+   static float m_AS_log_otuput_pid[1024];
+
+   static int indice_log=0;
+
+   static bool finito_log=false ;
+
+#endif
+
+// #ifdef LOGGA_PID
+//    int indice_log = 0;
+//    bool finito_log=false;
+// #endif
+
 
 class Controller
 {
@@ -28,7 +51,7 @@ public:
    static void computa_AD();
 
    HardwareTimer *Timer_per_rpm = new HardwareTimer(TIM5); // TODO: definire alias per TIM5 e spostare in robopin.h
-   HardwareTimer *Timer_per_pid = new HardwareTimer(TIM9); // TODO: definire alias per TIM9 e spostare in robopin.h
+   HardwareTimer *Timer_per_pid = new HardwareTimer(TIM11); // TODO: definire alias per TIM9 e spostare in robopin.h
 
 
    static float output_pid_AD;
@@ -58,12 +81,10 @@ public:
 
 #endif
 
+
+
 private:
    static void calcola_nuova_rpm(Motore & m);
-
-
-
-
 };
 
 
@@ -86,9 +107,8 @@ QuickPID Controller::pid_PD(&Controller::_mot_pos_dx._rpm,&Controller::output_pi
 QuickPID Controller::pid_PS(&Controller::_mot_pos_sx._rpm,&Controller::output_pid_PS,&Controller::_mot_pos_sx._rpm_target);
 QuickPID Controller::pid_AS(&Controller::_mot_ant_sx._rpm,&Controller::output_pid_AS,&Controller::_mot_ant_sx._rpm_target);
 
-#ifdef LOGGA_RPM
-   Controller::indice_log =0;
-#endif
+
+
 
 
 Controller::Controller() 
@@ -106,23 +126,25 @@ Controller::Controller()
    _mot_pos_sx.resetRPM();
    _mot_ant_sx.resetRPM();
 
+   pid_AD.SetSampleTimeUs(INTERVALLO_CAMPIONAMENTO_RPM * 1000);
+   pid_AD.SetOutputLimits(-50, 50);
+   
+   //pid_AD.SetAntiWindupMode(QuickPID::iAwMode::iAwClamp);
+   
+   pid_AD.SetMode(QuickPID::Control::timer);
+   pid_AD.SetTunings(1.9, 0.1, 0.0); // Kp, Ki, Kd
+   pid_AD.SetProportionalMode(QuickPID::pMode::pOnError);
+
 
    Timer_per_rpm->setOverflow(1000 / INTERVALLO_CAMPIONAMENTO_RPM, HERTZ_FORMAT);
    Timer_per_rpm->attachInterrupt(aggiorna_RPM_dei_quattro_motori);
    Timer_per_rpm->resume();
 
-   Timer_per_pid->setOverflow(1000 / INTERVALLO_CAMPIONAMENTO_RPM, HERTZ_FORMAT);
+   Timer_per_pid->setOverflow(1000 / INTERVALLO_CAMPIONAMENTO_RPM *2, HERTZ_FORMAT);
    Timer_per_pid->attachInterrupt(aggiorna_PID_dei_quattro_motori);
-   //Timer_per_pid->resume();
+   Timer_per_pid->resume();
 
-   pid_AD.SetSampleTimeUs(INTERVALLO_CAMPIONAMENTO_RPM * 1000);
-   pid_AD.SetOutputLimits(0, 255);
-   
-   //pid_AD.SetAntiWindupMode(QuickPID::iAwMode::iAwClamp);
-   
-   pid_AD.SetMode(QuickPID::Control::timer);
-   pid_AD.SetTunings(0.01, 0.00, 0.0); // Kp, Ki, Kd
-   pid_AD.SetProportionalMode(QuickPID::pMode::pOnError);
+
 
 };
 
@@ -154,48 +176,40 @@ void Controller::ISR_encoder_Motore_AS()
    _mot_ant_sx.ISR_encoder();
 }
 
-
-void Controller::aggiorna_PID_dei_quattro_motori(){
-
+void Controller::aggiorna_PID_dei_quattro_motori()
+{
 
    if (_mot_ant_dx._rpm_valida)
    {
 
-#ifdef LOGGA_RPM
-      m_AD_log_rpm[indice_log]=_mot_ant_dx._rpm;
-      m_PD_log_rpm[indice_log]=_mot_pos_dx._rpm;
-      m_PS_log_rpm[indice_log]=_mot_pos_sx._rpm;
-      m_AS_log_rpm[indice_log]=_mot_ant_sx._rpm;
-
-      float m_AD_log_otuput_pid[indice_log]=output_pid_AD;
-      float m_PD_log_otuput_pid[indice_log]=output_pid_PD;
-      float m_PS_log_otuput_pid[indice_log]=output_pid_PS;
-      float m_AS_log_otuput_pid[indice_log]=output_pid_AS;
-
-      if (output_pid_AD++ == 1024)output_pid_AD=0;
-      if (output_pid_PD++ == 1024)output_pid_PD=0;
-      if (output_pid_PS++ == 1024)output_pid_PS=0;
-      if (output_pid_AS++ == 1024)output_pid_AS=0;
-
-#endif
-
       Controller::pid_AD.Compute();
       float pwm_base = _mot_ant_dx.rpm_to_pwm(_mot_ant_dx._rpm_target); // TODO: creare attributo per non calcolarlo ogni volta
-      float pwm_cmd = _mot_ant_dx._pwm + output_pid_AD;
-      //float pwm_cmd = output_pid_AD;
-      pwm_cmd = constrain(pwm_cmd, 0, 255);
+      int pwm_cmd = pwm_base + (int) output_pid_AD;
+      // NO FEED int pwm_cmd = (int) output_pid_AD;
+      // float pwm_cmd = output_pid_AD;
+      pwm_cmd = constrain(pwm_cmd, -255, 255);
       _mot_ant_dx.muovi((int)pwm_cmd);
+
+#ifdef LOGGA_PID
+      if ((!finito_log) and (_mot_ant_dx._rpm_target !=0 ))
+      {
+         m_AD_log_rpm[indice_log] = _mot_ant_dx._rpm;
+         m_PD_log_rpm[indice_log] = _mot_pos_dx._rpm;
+         m_PS_log_rpm[indice_log] = _mot_pos_sx._rpm;
+         m_AS_log_rpm[indice_log] = _mot_ant_sx._rpm;
+
+         m_AD_log_otuput_pid[indice_log] = output_pid_AD;
+         m_PD_log_otuput_pid[indice_log] = output_pid_PD;
+         m_PS_log_otuput_pid[indice_log] = output_pid_PS;
+         m_AS_log_otuput_pid[indice_log] = output_pid_AS;
+
+         if (indice_log++ == 1024)
+            finito_log = true;
+      }
+#endif
    }
-
-// float pwm_base = _mot_ant_dx(targetRPM);
-// float pwm_cmd  = pwm_base + pid_output;
-// pwm_cmd = constrain(pwm_cmd, 0, 255);
-
-//pid_PD
-//pid_PS
-//pid_AS
-
 }
+
 
 // void Controller::computa_AD(){
 //    pid_AD.Compute();

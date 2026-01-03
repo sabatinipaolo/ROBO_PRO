@@ -138,10 +138,10 @@ void Motore::test_avanti_indietro(int pwm)
 int Motore::rpm_to_pwm(int rpm)
 {   //TODO: ragionarci sopra...
     if (rpm==0) return 0;    
-    return (int) map( rpm , 0, 400,0,255);
-    return (int) 2.13*rpm - 513.5;  //a vuoto 
-    //return int (1.04419f*rpm - 65.0);  //interpolazione della misura su terreno ....
-    //return int (1.28*rpm - 274.0);  //interpolazione della misura a vuoto...
+    //return (int) map( rpm , 0, 400,0,255);
+    //return (int) (0.97*rpm - 173);  //sulcampo  6.3V
+    return (int) (1.31*rpm - 442);  //a vuoto  6.3V
+    
 };
 
 void Motore::ISR_encoder()

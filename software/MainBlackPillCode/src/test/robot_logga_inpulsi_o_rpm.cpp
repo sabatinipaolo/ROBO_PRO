@@ -3,7 +3,7 @@
 
 
 //#define LOGGA_IMPULSI 
-#define LOGGA_RPM 
+//#define LOGGA_RPM 
 
 #include "robot.h"
 
