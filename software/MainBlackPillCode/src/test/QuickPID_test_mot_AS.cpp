@@ -40,7 +40,7 @@ void setup()
 
   m.muovi(130);
   delay(10);
-    m.aggiorna_rpm();
+    m.aggiorna_lettura_rpm();
   Serial.print("iniziale rpm = ");
   Serial.print(m._rpm);
   delay(5000);
@@ -48,7 +48,7 @@ void setup()
 
 void loop()
 {
-  m.aggiorna_rpm();
+  m.aggiorna_lettura_rpm();
   Serial.print("rpm = ");
   Serial.print(m._rpm);
 

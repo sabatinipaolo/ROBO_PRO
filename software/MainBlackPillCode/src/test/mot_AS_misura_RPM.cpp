@@ -28,7 +28,7 @@ void setup()
 
 void loop() {
 
-    m.aggiorna_rpm();
+    m.aggiorna_lettura_rpm();
 
     Serial.print("RPM =");
     

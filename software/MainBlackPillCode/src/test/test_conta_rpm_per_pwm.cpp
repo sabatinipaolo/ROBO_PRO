@@ -25,7 +25,7 @@ for (int pwm=40;pwm<=255;pwm+=5){
     //calcola media rpm per pwm in un intervallo 30*100 = 3000 ms = 3 sec
     long somma_rpm=0;
     for ( int t = 0 ; t<30; t++){
-        m.aggiorna_rpm();
+        m.aggiorna_lettura_rpm();
         somma_rpm += m._rpm;
         delay(100);
     };

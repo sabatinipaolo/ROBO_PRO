@@ -24,7 +24,7 @@ void PID_velocita() {
 
   if (dt >= INTERVALLO_CAMPIONAMENTO_PID)
   {    // Aggiorna RPM prima di calcolare errore
-    r._mot_ant_dx.aggiorna_rpm();
+    r._mot_ant_dx.aggiorna_lettura_rpm();
     float errore = _target_rpm - _rpm;
 
     unsigned long now = millis();
@@ -73,7 +73,7 @@ void setup()
    
     //   < 1 uSec
     //  long before=micros();
-    //  r._mot_ant_dx.aggiorna_rpm();
+    //  r._mot_ant_dx.aggiorna_lettura_rpm();
     //  long after=micros();
     //  long time=after-before;
     //  Serial.print( "aggiornaRPM = ");

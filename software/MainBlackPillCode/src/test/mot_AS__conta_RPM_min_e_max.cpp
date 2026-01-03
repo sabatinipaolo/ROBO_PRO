@@ -27,7 +27,7 @@ void setup()
          rpm_max=-10000;
         for (int i=0 ;i <10;i++){
 
-                m.aggiorna_rpm();
+                m.aggiorna_lettura_rpm();
                 if (m._rpm> rpm_max) 
                     rpm_max = m._rpm;
 

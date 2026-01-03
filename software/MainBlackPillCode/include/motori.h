@@ -32,13 +32,24 @@ public:
 
     int rpm_to_pwm(int rpm);
     void ISR_encoder();
-    void resetRPM();
+    void reset_lettura_RPM();
+    
+    bool lettura_rpm_valida(){ return _rpm_valida;}
 
-    void aggiorna_rpm();
+    void aggiorna_lettura_rpm();
+
+    void set_target_RPM(float rpm);
+    
+    //TODO: in attesa che _rpm venga resa privata usa questa comunque:
+    float get_rpm(){ return _rpm;};
+  
     float _rpm=0;
    
-    bool _rpm_valida=false;
+  
+    // TODO: rpm_target pubblica in attesa di refactoring 
+    // usare set_target_RPM 
     float _rpm_target;
+
     int _pwm=0;
     int _pwm_base=0;
     
@@ -56,7 +67,9 @@ public:
 
 
   private:
-  
+    
+    bool _rpm_valida=false;
+    
 
     //variabili per calcolo RPM
     volatile unsigned long conta_impulsi_encoder = 0;

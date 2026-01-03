@@ -10,6 +10,7 @@ Motore &Controller::_mot_pos_dx = motori[1];
 Motore &Controller::_mot_pos_sx = motori[2];
 Motore &Controller::_mot_ant_sx = motori[3];
 
+//TODO: spostare PID nei motori in modo da rendere private _rpm e _rpm_target 
 QuickPID Controller::pids[] = {QuickPID(&Controller::_mot_ant_dx._rpm, &Controller::output_pid_AD, &Controller::_mot_ant_dx._rpm_target),
                                QuickPID(&Controller::_mot_pos_dx._rpm, &Controller::output_pid_PD, &Controller::_mot_pos_dx._rpm_target),
                                QuickPID(&Controller::_mot_pos_sx._rpm, &Controller::output_pid_PS, &Controller::_mot_pos_sx._rpm_target),
@@ -38,6 +39,7 @@ Controller::Controller()
 };
 
 void Controller::init(){
+  for (int i=0;i<4;i++) motori[i].stop();
   
    // TODO: i pin degli encoder sono deginiti INPUT_PULLUP nei Motori: e' il caso di spostare qui?
 
@@ -47,10 +49,10 @@ void Controller::init(){
    attachInterrupt(digitalPinToInterrupt(PIN_ENC_AS1), ISR_encoder_Motore_AS, RISING);
    
    // TODO: e' veramente necessario?
-   _mot_ant_dx.resetRPM();
-   _mot_pos_dx.resetRPM();
-   _mot_pos_sx.resetRPM();
-   _mot_ant_sx.resetRPM();
+   _mot_ant_dx.reset_lettura_RPM();
+   _mot_pos_dx.reset_lettura_RPM();
+   _mot_pos_sx.reset_lettura_RPM();
+   _mot_ant_sx.reset_lettura_RPM();
    
    // TIMER RPM
    Timer_per_rpm = new HardwareTimer(TIM5); // TODO: definire alias per TIM5 e spostare in robopin.h
@@ -73,14 +75,14 @@ void Controller::init(){
 
    Timer_per_pid->setOverflow(1000 / INTERVALLO_CAMPIONAMENTO_RPM, HERTZ_FORMAT);
    Timer_per_pid->attachInterrupt(aggiorna_PID_dei_quattro_motori);
-   Timer_per_pid->resume();
+   enable_PID();
 }
 
 void Controller::aggiorna_RPM_dei_quattro_motori()
 { // dura circa 2 - 6 us (microsecondi)
    for (int i = 0; i < 4; i++)
    {
-      motori[i].aggiorna_rpm();
+      motori[i].aggiorna_lettura_rpm();
    }
 }
 
@@ -106,36 +108,67 @@ void Controller::ISR_encoder_Motore_AS()
 
 void Controller::aggiorna_PID_dei_quattro_motori()
 {
+   for (int i = 0; i < 4; i++)
+   {
+      if (motori[i].lettura_rpm_valida())
+      {
+         pids[i].Compute();
+         float pwm_base = motori[i].rpm_to_pwm(motori[i]._rpm_target); // TODO: creare attributo per non calcolarlo ogni volta
+         int pwm_cmd = pwm_base + (int)output_pid_AD;
+         pwm_cmd = constrain(pwm_cmd, -255, 255);
+         motori[i].muovi((int) pwm_cmd);
 
-//    if (_mot_ant_dx._rpm_valida)
-//    {
+         // #ifdef LOGGA_Plog_rpm[indice_log] = _mot_ant_dx._rpm;
+         //          m_PD_log_rpm[indice_log] = _mot_pos_dx._rpm;
+         //          m_PS_log_rpm[indice_log] = _mot_pos_sx._rpm;
+         //          m_AS_log_rpm[indice_log] = _mot_ant_sx._rpm;
+         //
+         //          m_AD_log_otuput_pid[indice_log] = output_pid_AD;
+         //          m_PD_log_otuput_pid[indice_log] = output_pid_PD;
+         //          m_PS_log_otuput_pid[indice_log] = output_pid_PS;
+         //          m_AS_log_otuput_pid[indice_log] = output_pid_AS;
+         //
+         //          if (indice_log++ == 1024)
+         //             finito_log = true;
+         //       }
+         // #endif
+         //    }ID
+         //       if ((!finito_log) and (_mot_ant_dx._rpm_target !=0 ))
+         //       {
+         //          m_AD_log_rpm[indice_log] = _mot_ant_dx._rpm;
+         //          m_PD_log_rpm[indice_log] = _mot_pos_dx._rpm;
+         //          m_PS_log_rpm[indice_log] = _mot_pos_sx._rpm;
+         //          m_AS_log_rpm[indice_log] = _mot_ant_sx._rpm;
+         //
+         //          m_AD_log_otuput_pid[indice_log] = output_pid_AD;
+         //          m_PD_log_otuput_pid[indice_log] = output_pid_PD;
+         //          m_PS_log_otuput_pid[indice_log] = output_pid_PS;
+         //          m_AS_log_otuput_pid[indice_log] = output_pid_AS;
+         //
+         //          if (indice_log++ == 1024)
+         //             finito_log = true;
+         //       }
+         // #endif
+      }
+   }
+}
 
-//       pid_AD.Compute();
-//       float pwm_base = _mot_ant_dx.rpm_to_pwm(_mot_ant_dx._rpm_target); // TODO: creare attributo per non calcolarlo ogni volta
-//       int pwm_cmd = pwm_base + (int) output_pid_AD;
-//       // NO FEED int pwm_cmd = (int) output_pid_AD;
-//       // float pwm_cmd = output_pid_AD;
-//       pwm_cmd = constrain(pwm_cmd, -255, 255);
-//       _mot_ant_dx.muovi((int)pwm_cmd);
+void Controller::enable_PID()
+{  
+   for (int i=0;i<4;i++)
+   {
+      pids[i].Reset();
+   }
+   Timer_per_pid->resume();
+}
 
-// #ifdef LOGGA_PID
-//       if ((!finito_log) and (_mot_ant_dx._rpm_target !=0 ))
-//       {
-//          m_AD_log_rpm[indice_log] = _mot_ant_dx._rpm;
-//          m_PD_log_rpm[indice_log] = _mot_pos_dx._rpm;
-//          m_PS_log_rpm[indice_log] = _mot_pos_sx._rpm;
-//          m_AS_log_rpm[indice_log] = _mot_ant_sx._rpm;
-
-//          m_AD_log_otuput_pid[indice_log] = output_pid_AD;
-//          m_PD_log_otuput_pid[indice_log] = output_pid_PD;
-//          m_PS_log_otuput_pid[indice_log] = output_pid_PS;
-//          m_AS_log_otuput_pid[indice_log] = output_pid_AS;
-
-//          if (indice_log++ == 1024)
-//             finito_log = true;
-//       }
-// #endif
-//    }
+void Controller::disable_PID()
+{  
+   for (int i=0;i<4;i++)
+   {
+      pids[i].Reset();
+   }
+   Timer_per_pid->pause();
 }
 
 Controller controller;

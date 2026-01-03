@@ -7,7 +7,7 @@ Motore::Motore(int pin1, int pin2, int pin_enc1, int pin_enc2)
     pinMode(_pin1, OUTPUT);
     pinMode(_pin2, OUTPUT);
     stop();
-    aggiorna_rpm();
+    aggiorna_lettura_rpm();
    
 };
 
@@ -31,11 +31,11 @@ void Motore::stop()
 void Motore::muovi(int pwm)
 {//TODO: ottimizzare 
   if (_pwm == 0 && pwm != 0) {
-    resetRPM();   // partenza
+    reset_lettura_RPM();   // partenza
   }
 
   if ((_pwm > 0 && pwm < 0) || (_pwm < 0 && pwm > 0)) {
-    resetRPM();   // cambio direzione
+    reset_lettura_RPM();   // cambio direzione
   };
     if(pwm==0 ) stop();
     else
@@ -91,9 +91,9 @@ void Motore::ISR_encoder()
   }
 }
 
-void Motore::resetRPM()
+void Motore::reset_lettura_RPM()
 {//TODO: spostare in controller?
-// resetRPM() va chiamata solo quando:
+// reset_lettura_RPM() va chiamata solo quando:
 // - il motore parte da fermo
 // - il motore si ferma
 // - si cambia direzione
@@ -108,7 +108,7 @@ void Motore::resetRPM()
 
 }
 
-void Motore::aggiorna_rpm()
+void Motore::aggiorna_lettura_rpm()
 {
     noInterrupts();
     unsigned long cnt = conta_impulsi_encoder;
@@ -140,5 +140,12 @@ void Motore::aggiorna_rpm()
 
 }
 
+void Motore::set_target_RPM(float rpm ){
+  //TODO : gestire la dead zone ..qui o in rpm_to_pwm ?
+  _rpm_target = rpm;
+  int pwm_cmd = (int) rpm_to_pwm( rpm);
+  muovi ( constrain(pwm_cmd,0,255));
+
+}
 
   

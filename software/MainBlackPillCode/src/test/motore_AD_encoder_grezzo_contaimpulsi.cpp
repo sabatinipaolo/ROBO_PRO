@@ -22,7 +22,7 @@ void setup(){
 
 void loop(){
     delay(200);
-    m.aggiorna_rpm();
+    m.aggiorna_lettura_rpm();
     Serial.print( "rpm = "); Serial.println(m._rpm);
     Serial.print( "Ecount= "); Serial.println(m.encoderCount);
     
