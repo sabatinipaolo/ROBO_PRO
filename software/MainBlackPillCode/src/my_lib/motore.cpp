@@ -70,14 +70,21 @@ void Motore::test_avanti_indietro(int pwm)
 }
 
 int Motore::rpm_to_pwm(int rpm)
-{   //TODO: ragionarci sopra...
-    if (rpm==0) return 0;    
-    //return (int) map( rpm , 0, 400,0,255);
-    //return (int) (0.97*rpm - 173);  //sulcampo  6.3V
-    //return (int) (1.31*rpm - 442);  //a vuoto  6.3V
-    return (int) (1.33*rpm - 439.80+15);  //a vuoto  6.3V [80-255]  <-- [360 - 500]
-                                          // +10 per avere un po+ di boost...
-    
+{   //TODO: RAFFINARE LE CURVE !!!!!..
+
+  int ritorno = 0;
+  if (rpm == 0)
+    return 0;
+  if (rpm > 0)
+    // return (int) map( rpm , 0, 400,0,255);
+    // return (int) (0.97*rpm - 173);  //sulcampo  6.3V
+    // return (int) (1.31*rpm - 442);  //a vuoto  6.3V
+    ritorno = (int)(1.33 * rpm - 439.80 + 15); // a vuoto  6.3V [80-255]  <-- [360 - 500]
+                                               //  +10 per avere un po+ di boost...
+  if (rpm < 0)
+    ritorno = (int)-((1.33 * -rpm - 439.80 + 15));
+
+  return ritorno;
 };
 
 void Motore::ISR_encoder()
