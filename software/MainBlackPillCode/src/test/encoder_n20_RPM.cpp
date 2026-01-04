@@ -1,8 +1,6 @@
 #include <Arduino.h>
 #include "motori.h"
 
-#define ENCODER_A PA4 // INT0
-#define ENCODER_B PA3
 #define CPR 210         // 7 PPR × 30 gear ratio
 #define SAMPLE_TIME 100 // ms
 
@@ -13,13 +11,13 @@ unsigned long lastTime = 0;
 long lastCount = 0;
 float rpm = 0;
 
-Motore motoPD(PIN_MOT_PD1, PIN_MOT_PD2);
+Motore mot(PIN_MOT_AD1, PIN_MOT_AD2,PIN_ENC_AD1,PIN_ENC_AD2);
 
 
 void encoderISR()
 {
   // Determina la direzione usando il canale B
-  if (digitalRead(ENCODER_B) == HIGH)
+  if (digitalRead(PIN_ENC_AD2) == HIGH)
   {
     encoderCount++;
   }
@@ -32,14 +30,14 @@ void encoderISR()
 
 void setup()
 { 
-  pinMode(ENCODER_A, INPUT_PULLUP);
-  pinMode(ENCODER_B, INPUT_PULLUP);
+  pinMode(PIN_ENC_AD1, INPUT_PULLUP);
+  pinMode(PIN_ENC_AD2, INPUT_PULLUP);
 
-  attachInterrupt(digitalPinToInterrupt(ENCODER_A), encoderISR, RISING);
+  attachInterrupt(digitalPinToInterrupt(PIN_ENC_AD1), encoderISR, RISING);
 
   Serial.begin(115200);
   delay(5000); //prendo tempo per monitor seriale  
-  motoPD.orario(255);
+  mot.orario(255);
 }
 
 // ----------------------

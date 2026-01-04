@@ -1,5 +1,5 @@
 #include <Arduino.h>
-
+//UTILE PER CONTARE IMPULSI
 volatile long enc = 0;
 
 void isrEnc() {
