@@ -71,11 +71,11 @@ void Controller::init(){
    }
 
    // TIMER PID
-   Timer_per_pid = new HardwareTimer(TIM11); // TODO: definire alias per TIM9 e spostare in robopin.h
+   Timer_per_pid = new HardwareTimer(TIM9); // TODO: definire alias per TIM9 e spostare in robopin.h
 
    Timer_per_pid->setOverflow(1000 / INTERVALLO_CAMPIONAMENTO_RPM, HERTZ_FORMAT);
-   Timer_per_pid->attachInterrupt(aggiorna_PID_dei_quattro_motori);
-   enable_PID();
+   //Timer_per_pid->attachInterrupt(aggiorna_PID_dei_quattro_motori);
+   disable_PID();
 }
 
 void Controller::aggiorna_RPM_dei_quattro_motori()
@@ -159,16 +159,19 @@ void Controller::enable_PID()
    {
       pids[i].Reset();
    }
-   Timer_per_pid->resume();
+   //TODO: Timer->resume() non fa funzionare i motori...
+   //      la pezza e' sugli interrupt, STUDIA i Timer e chasnnel
+   Timer_per_pid->attachInterrupt(aggiorna_PID_dei_quattro_motori);
 }
 
 void Controller::disable_PID()
-{  
+{  //TODO: Timer->pause() non fa funzionare i motori...
+   //      la pezza e' sugli interrupt, STUDIA i Timer e chasnnel
+   Timer_per_pid->detachInterrupt();
    for (int i=0;i<4;i++)
    {
       pids[i].Reset();
    }
-   Timer_per_pid->pause();
 }
 
 Controller controller;
