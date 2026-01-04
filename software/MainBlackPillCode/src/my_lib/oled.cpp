@@ -26,6 +26,15 @@ void Oled::stampa4rpm(Controller & c){
     stampa4float(c._mot_ant_sx._rpm,c._mot_ant_dx._rpm,
                  c._mot_pos_sx._rpm,c._mot_pos_dx._rpm );
 }
+void Oled::stampa_angolo_velocita(float alfa,int velocita){
+    clearDisplay();
+    setCursor(0, 0); 
+    print( alfa );
+    print( " " );
+    println( velocita );
+    print( "alf  vel " );
+    display();
+}
 
 void Oled::stampa4float(float f1, float f2, float f3, float f4)
 {

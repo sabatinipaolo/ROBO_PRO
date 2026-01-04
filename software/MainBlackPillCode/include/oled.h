@@ -17,6 +17,8 @@ public:
     Oled() : Adafruit_SSD1306(OLED_RESET) {};
     bool begin();
     void stampa4rpm(Controller &c);
+    void stampa_angolo_velocita(float alfa, int velocita);
+
 private:
     void stampa4float( float,float,float,float);
 };
