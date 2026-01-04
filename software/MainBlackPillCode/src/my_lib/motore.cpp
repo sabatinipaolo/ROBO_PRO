@@ -144,7 +144,8 @@ void Motore::set_target_RPM(float rpm ){
   //TODO : gestire la dead zone ..qui o in rpm_to_pwm ?
   _rpm_target = rpm;
   int pwm_cmd = (int) rpm_to_pwm( rpm);
-  muovi ( constrain(pwm_cmd,0,255));
+  _pwm=constrain(pwm_cmd,-255,255);
+  muovi ( _pwm );
 
 }
 
