@@ -5,9 +5,6 @@
 #include "robotpropin.h"
 #include "controller.h"
 
-#ifdef HAS_OLED_DISPLAY
-    #include "oled.h"
-#endif
 
 constexpr float radice2_su2 = 0.70710678118654752440084436210485;
 constexpr float pi = 3.14159265358979323846;
@@ -21,6 +18,7 @@ public:
     void trasla(float alfa, int velocita);
     void stop();
 
+    
     void muovi_nord(int pwm);
     void muovi_nord_est(int pwm);
     void muovi_est(int pwm);
@@ -30,51 +28,32 @@ public:
     void muovi_ovest(int pwm);
     
     void muovi_nord_ovest(int pwm);
-
-    static void aggiorna_RPM_dei_quattro_motori();
-        
-
-   
- 
-    
+  
     void test_motori();
 
-#ifdef HAS_OLED_DISPLAY
-    Oled oled ;
-#endif
-    Controller controller;
 };
 
 
 
 Robot::Robot() 
-        : oled() , controller()
+      
 {       
 
 }
 
 void Robot::inizializza()
 {
+
     stop();
+    controller.init();
     oled.begin();
 
 }
 
 void Robot::trasla(float alfa, int velocita)
 {   
-    #ifdef HAS_OLED_DISPLAY
-        oled.clearDisplay();
-        oled.setCursor(0, 0); // Start at top-left corner
-        oled.print(alfa);
-        oled.print(" ");
-        oled.print(velocita);
-        oled.display();
-    #endif
     
-    Serial.print(" Robot.trasla : alfa= ");
-    Serial.print(alfa);
-    Serial.print(" velocita= ");
-    Serial.println(velocita);
+
 
 
     float alfa_rad = alfa * pi / 180.0f;
@@ -87,10 +66,10 @@ void Robot::trasla(float alfa, int velocita)
     int vas = static_cast<int>(-velocita * radice2_su2 * sina);
     int vpd = -vas;
 
-    controller._mot_ant_dx.muovi(vad);
-    controller._mot_pos_dx.muovi(vpd);
-    controller._mot_ant_sx.muovi(vas);
-    controller._mot_pos_sx.muovi(vps);
+    controller._mot_ant_dx.set_target_RPM(vad);
+    controller._mot_pos_dx.set_target_RPM(vpd);
+    controller._mot_ant_sx.set_target_RPM(vas);
+    controller._mot_pos_sx.set_target_RPM(vps);
 }
 
 void Robot::stop()
