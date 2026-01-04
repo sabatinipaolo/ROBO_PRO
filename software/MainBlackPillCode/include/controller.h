@@ -25,10 +25,10 @@ public:
 
    static float output_pids[];
 
-   static float output_pid_AD;
-   static float output_pid_PD;
-   static float output_pid_PS;
-   static float output_pid_AS;
+   static float &output_pid_AD;
+   static float &output_pid_PD;
+   static float &output_pid_PS;
+   static float &output_pid_AS;
 
 
   

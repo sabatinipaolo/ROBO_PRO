@@ -22,10 +22,11 @@ QuickPID &Controller::pid_PS=pids[2];
 QuickPID &Controller::pid_AS=pids[3];
 
 
-float Controller::output_pid_AD=0;
-float Controller::output_pid_PD=0;
-float Controller::output_pid_PS=0;
-float Controller::output_pid_AS=0;
+float Controller::output_pids[]={0,0,0,0};
+float &Controller::output_pid_AD=output_pids[0];
+float &Controller::output_pid_PD=output_pids[1];
+float &Controller::output_pid_PS=output_pids[2];
+float &Controller::output_pid_AS=output_pids[3];
 
 
 HardwareTimer *Controller::Timer_per_rpm =nullptr;
@@ -67,6 +68,7 @@ void Controller::init(){
       pids[i].SetOutputLimits(-50, 50);
       pids[i].SetMode(QuickPID::Control::timer);
       pids[i].SetTunings(1.9, 0.1, 0.0); // Kp, Ki, Kd
+ //     pids[i].SetTunings(3.1, 0.3, 0.0); // Kp, Ki, Kd
       pids[i].SetProportionalMode(QuickPID::pMode::pOnError);
    }
 
@@ -74,8 +76,9 @@ void Controller::init(){
    Timer_per_pid = new HardwareTimer(TIM9); // TODO: definire alias per TIM9 e spostare in robopin.h
 
    Timer_per_pid->setOverflow(1000 / INTERVALLO_CAMPIONAMENTO_RPM, HERTZ_FORMAT);
-   //Timer_per_pid->attachInterrupt(aggiorna_PID_dei_quattro_motori);
-   disable_PID();
+   Timer_per_pid->attachInterrupt(aggiorna_PID_dei_quattro_motori);
+   //enable_PID();
+   Timer_per_pid->resume();
 }
 
 void Controller::aggiorna_RPM_dei_quattro_motori()
@@ -113,42 +116,10 @@ void Controller::aggiorna_PID_dei_quattro_motori()
       if (motori[i].lettura_rpm_valida())
       {
          pids[i].Compute();
-         float pwm_base = motori[i].rpm_to_pwm(motori[i]._rpm_target); // TODO: creare attributo per non calcolarlo ogni volta
-         int pwm_cmd = pwm_base + (int)output_pid_AD;
+         int pwm_cmd = motori[i].get_pwm_base() + (int) output_pids[i];
          pwm_cmd = constrain(pwm_cmd, -255, 255);
          motori[i].muovi((int) pwm_cmd);
 
-         // #ifdef LOGGA_Plog_rpm[indice_log] = _mot_ant_dx._rpm;
-         //          m_PD_log_rpm[indice_log] = _mot_pos_dx._rpm;
-         //          m_PS_log_rpm[indice_log] = _mot_pos_sx._rpm;
-         //          m_AS_log_rpm[indice_log] = _mot_ant_sx._rpm;
-         //
-         //          m_AD_log_otuput_pid[indice_log] = output_pid_AD;
-         //          m_PD_log_otuput_pid[indice_log] = output_pid_PD;
-         //          m_PS_log_otuput_pid[indice_log] = output_pid_PS;
-         //          m_AS_log_otuput_pid[indice_log] = output_pid_AS;
-         //
-         //          if (indice_log++ == 1024)
-         //             finito_log = true;
-         //       }
-         // #endif
-         //    }ID
-         //       if ((!finito_log) and (_mot_ant_dx._rpm_target !=0 ))
-         //       {
-         //          m_AD_log_rpm[indice_log] = _mot_ant_dx._rpm;
-         //          m_PD_log_rpm[indice_log] = _mot_pos_dx._rpm;
-         //          m_PS_log_rpm[indice_log] = _mot_pos_sx._rpm;
-         //          m_AS_log_rpm[indice_log] = _mot_ant_sx._rpm;
-         //
-         //          m_AD_log_otuput_pid[indice_log] = output_pid_AD;
-         //          m_PD_log_otuput_pid[indice_log] = output_pid_PD;
-         //          m_PS_log_otuput_pid[indice_log] = output_pid_PS;
-         //          m_AS_log_otuput_pid[indice_log] = output_pid_AS;
-         //
-         //          if (indice_log++ == 1024)
-         //             finito_log = true;
-         //       }
-         // #endif
       }
    }
 }
