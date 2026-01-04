@@ -74,7 +74,9 @@ int Motore::rpm_to_pwm(int rpm)
     if (rpm==0) return 0;    
     //return (int) map( rpm , 0, 400,0,255);
     //return (int) (0.97*rpm - 173);  //sulcampo  6.3V
-    return (int) (1.31*rpm - 442);  //a vuoto  6.3V
+    //return (int) (1.31*rpm - 442);  //a vuoto  6.3V
+    return (int) (1.33*rpm - 439.80+15);  //a vuoto  6.3V [80-255]  <-- [360 - 500]
+                                          // +10 per avere un po+ di boost...
     
 };
 
@@ -144,7 +146,10 @@ void Motore::set_target_RPM(float rpm ){
   //TODO : gestire la dead zone ..qui o in rpm_to_pwm ?
   _rpm_target = rpm;
   int pwm_cmd = (int) rpm_to_pwm( rpm);
-  _pwm=constrain(pwm_cmd,-255,255);
+
+  _pwm_base=constrain(pwm_cmd,-255,255);
+  _pwm=_pwm_base;
+  
   muovi ( _pwm );
 
 }

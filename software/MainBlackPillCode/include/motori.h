@@ -40,9 +40,14 @@ public:
 
     void set_target_RPM(float rpm);
     
-    //TODO: in attesa che _rpm venga resa privata usa questa comunque:
-    float get_rpm(){ return _rpm;};
-  
+    //TODO: in attesa che  vengano rese private usa comunque ueste:
+      float get_rpm(){ return _rpm;};
+      float get_pwm(){ return _pwm;};
+      float get_pwm_base(){ return _pwm_base;};
+    //TODO: in attesa che  vengano rese private usa comunque ueste:
+      
+    
+
     float _rpm=0;
    
   
