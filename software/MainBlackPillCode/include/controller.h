@@ -47,9 +47,29 @@ public:
 
    static HardwareTimer *Timer_per_rpm ;
    static HardwareTimer *Timer_per_pid ;
-};
 
-extern Controller controller;
+#ifdef LOGGA_RPM
+   void stampa_log_RPM_4_motori()
+
+   {
+      for (int i_riga = 0; i_riga < dim_log_RPM; i_riga++)
+      {
+         Serial.print(i_riga * INTERVALLO_CAMPIONAMENTO_RPM);
+         Serial.print(" ");
+         for (int im = 0; im < 4; im++)
+         {
+            Serial.print(motori[im].log_RPM[i_riga]);
+            Serial.print(" ");
+         };
+         Serial.println();
+
+      }
+   }
+
+#endif
+   };
+
+   extern Controller controller;
 
 #endif
 

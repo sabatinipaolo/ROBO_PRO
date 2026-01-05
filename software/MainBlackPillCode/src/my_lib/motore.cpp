@@ -29,14 +29,10 @@ void Motore::stop()
 }
 
 void Motore::muovi(int pwm)
-{//TODO: ottimizzare 
-  if (_pwm == 0 && pwm != 0) {
-    reset_lettura_RPM();   // partenza
-  }
-
-  if ((_pwm > 0 && pwm < 0) || (_pwm < 0 && pwm > 0)) {
-    reset_lettura_RPM();   // cambio direzione
-  };
+{
+   #ifdef LOGGA_RPM
+      reset_log_RPM();
+   #endif
     if(pwm==0 ) stop();
     else
     if (pwm > 0)
@@ -100,23 +96,6 @@ void Motore::ISR_encoder()
   }
 }
 
-void Motore::reset_lettura_RPM()
-{//TODO: spostare in controller?
-// reset_lettura_RPM() va chiamata solo quando:
-// - il motore parte da fermo
-// - il motore si ferma
-// - si cambia direzione
-// - si cambia modalità di controllo
-
-  noInterrupts();
-  ultimo_conteggio_impulsi = conta_impulsi_encoder;
-  interrupts();
-  _rpm_valida = false;
-
-  ultimo_orario_campionamento = millis();
-
-}
-
 void Motore::aggiorna_lettura_rpm()
 {
     noInterrupts();
@@ -134,8 +113,11 @@ void Motore::aggiorna_lettura_rpm()
     //_rpm += ALPHA * (rpm_raw - _rpm);  //filtro misura se occorre 
 
     _rpm += ALPHA * (rpm_raw - _rpm);
-    _rpm_valida = true;
 
+    #ifdef LOGGA_RPM
+      logga_RPM();
+    #endif
+    
 }
 
 void Motore::set_target_RPM(float rpm ){

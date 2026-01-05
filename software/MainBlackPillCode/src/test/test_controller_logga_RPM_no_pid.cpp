@@ -1,17 +1,15 @@
 #include <Arduino.h>
-
-
-#define LOGGA_RPM 1
-
 #include "controller.h"
 
-void stampa_log( int indice_motore)
+void stampa_rpm_da_loop( int indice_motore)
 {   Motore &m=controller.motori[indice_motore];
-    if (m.lettura_rpm_valida())
+
     {
         float rpm=m.get_rpm();
         float pwm=m.get_pwm();
         float pwm_base=m.get_pwm_base();
+        Serial.print(" motore n. = ");
+        Serial.print(indice_motore);
 
         Serial.print(" m.rpm = ");
         Serial.print(rpm);
@@ -34,16 +32,11 @@ void stampa_log( int indice_motore)
     }
 }
 
+unsigned long int ora_start=0;
 void setup()
 {        
 
-
-
     controller.init();
-    
-
-    //no pid: non utilizzare controller.init_PID() o altro...
-
 
 
     { // starting serial e programma
@@ -56,23 +49,35 @@ void setup()
         {
             Serial.print("inizio tra ");
             Serial.println(i);
-            delay(200);
+            delay(1000);
         };
     }
-
+ora_start=millis();
     for (int i=0;i<4;i++){
-    controller.motori[i].muovi(200);
-    delay (22); // attende 1 o 2 misure
-    }
+        //controller.motori[i].indice_log_RPM=0; //resetta la log ..
+        controller.motori[i].muovi(-200);
+    };
+
+
 }
 
 void loop()
 {
-    // for (int i=0;i<4;i++){
-    //     stampa_log(i);
-    // };
-    // Serial.println();
 
-    // delay(1000);
-    
+    if ((millis()-ora_start ) <= 3000){
+    //if (0){
+        for (int i=0;i<4;i++)
+            stampa_rpm_da_loop(i);
+        Serial.println();
+        delay(100);
+    }
+    else
+    {
+
+controller.stampa_log_RPM_4_motori();
+delay(3000);
+
+
+        
+    }
 }

@@ -7,10 +7,9 @@ float target_to_pwm=controller._mot_ant_dx.rpm_to_pwm(target);
 
 
 
-void stampa_log( int indice_motore)
+void stampa_rpm_da_loop( int indice_motore)
 {   Motore &m=controller.motori[indice_motore];
-    if (m.lettura_rpm_valida())
-    {
+
         float rpm=m.get_rpm();
         float pwm=m.get_pwm();
         float pwm_base=m.get_pwm_base();
@@ -33,7 +32,7 @@ void stampa_log( int indice_motore)
         Serial.print(controller.output_pids[indice_motore]);
 
         Serial.println();
-    }
+
 }
 
 void setup()
@@ -66,7 +65,7 @@ void setup()
 void loop()
 {
     for (int i=0;i<4;i++){
-        stampa_log(i);
+        stampa_rpm_da_loop(i);
     };
     Serial.println();
 

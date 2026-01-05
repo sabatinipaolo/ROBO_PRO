@@ -35,10 +35,7 @@ public:
 
     int rpm_to_pwm(int rpm);
     void ISR_encoder();
-    void reset_lettura_RPM();
-    
-    bool lettura_rpm_valida(){ return _rpm_valida;}
-
+ 
     void aggiorna_lettura_rpm();
 
     void set_target_RPM(float rpm);
@@ -68,10 +65,6 @@ public:
 
 
   private:
-    
-    bool _rpm_valida=false;
-    
-
     //variabili per calcolo RPM
     volatile unsigned long conta_impulsi_encoder = 0;
              unsigned long ultimo_orario_campionamento = millis();
@@ -82,22 +75,19 @@ public:
              float log_RPM[dim_log_RPM];
              int indice_log_RPM = 0;
              bool finito_log = false;
+             void reset_log_RPM(){
+              indice_log_RPM=0;
+              finito_log= false;
+             }
              void logga_RPM()
              {
-               log_RPM[indice_log_RPM] = (lettura_rpm_valida(), get_rpm(), 9999.00f);
+               if (finito_log) return;
+
+               log_RPM[indice_log_RPM] = get_rpm();
                indice_log_RPM++;
                if (indice_log_RPM == dim_log_RPM)
-                 finito_log = true;
-             }
-
-             void stampa_log_RPM()
-             {
-               for (int i = 0; i < dim_log_RPM; i++)
                {
-                 Serial.print(i);
-                 Serial.print(" ");
-                 Serial.println(log_RPM[i]);
-                 logga_RPM();
+                 finito_log = true;
                }
              }
 #endif
