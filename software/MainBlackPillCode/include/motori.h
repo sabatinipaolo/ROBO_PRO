@@ -63,13 +63,6 @@ public:
     int _pin_enc1;
     int _pin_enc2;
 
-    #ifdef LOGGA_IMPULSI
-
-        long int log_impulsi[256];
-        u_int8_t indice_impulsi = 0;
-
-    #endif
-
 
   private:
     

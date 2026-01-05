@@ -126,10 +126,6 @@ void Motore::aggiorna_lettura_rpm()
     long  delta = cnt - ultimo_conteggio_impulsi;
     ultimo_conteggio_impulsi = cnt;
     
-    #ifdef LOGGA_IMPULSI
-    log_impulsi[indice_impulsi  ] = delta;
-    indice_impulsi++;
-    #endif
 
     float rpm_raw =
       (float)delta * 60000.0f / (IMPULSI_PER_GIRO * INTERVALLO_CAMPIONAMENTO_RPM);
