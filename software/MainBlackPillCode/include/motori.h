@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include "robotpropin.h"
 
+#define dim_log_RPM 1024
 
 #define MIN_PWM 80
 #define MAX_PWM 255
@@ -16,7 +17,9 @@
 
 class Motore
 {
+
 public:
+
     Motore(int pin1, int pin2, int pin_enc1, int pin_enc2);
     
     Motore(const Motore&) = delete;             //impedisce copie di oggetti motori, Motore m(m2) (costruttore copia) genera errore
@@ -73,6 +76,31 @@ public:
     volatile unsigned long conta_impulsi_encoder = 0;
              unsigned long ultimo_orario_campionamento = millis();
              unsigned long ultimo_conteggio_impulsi =0 ;
+
+#ifdef LOGGA_RPM
+           public:
+             float log_RPM[dim_log_RPM];
+             int indice_log_RPM = 0;
+             bool finito_log = false;
+             void logga_RPM()
+             {
+               log_RPM[indice_log_RPM] = (lettura_rpm_valida(), get_rpm(), 9999.00f);
+               indice_log_RPM++;
+               if (indice_log_RPM == dim_log_RPM)
+                 finito_log = true;
+             }
+
+             void stampa_log_RPM()
+             {
+               for (int i = 0; i < dim_log_RPM; i++)
+               {
+                 Serial.print(i);
+                 Serial.print(" ");
+                 Serial.println(log_RPM[i]);
+                 logga_RPM();
+               }
+             }
+#endif
 };
 
 
