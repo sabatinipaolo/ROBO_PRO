@@ -77,7 +77,6 @@ void Controller::init(){
 
    Timer_per_pid->setOverflow(1000 / INTERVALLO_CAMPIONAMENTO_RPM, HERTZ_FORMAT);
    Timer_per_pid->attachInterrupt(aggiorna_PID_dei_quattro_motori);
-   //enable_PID();
    Timer_per_pid->resume();
 }
 
@@ -121,28 +120,12 @@ void Controller::aggiorna_PID_dei_quattro_motori()
          motori[i].muovi((int) pwm_cmd);
 
       }
+#ifdef LOGGA_RPM
+      motori[i].logga_RPM();
+#endif
    }
 }
 
-void Controller::enable_PID()
-{  
-   for (int i=0;i<4;i++)
-   {
-      pids[i].Reset();
-   }
-   //TODO: Timer->resume() non fa funzionare i motori...
-   //      la pezza e' sugli interrupt, STUDIA i Timer e chasnnel
-   Timer_per_pid->attachInterrupt(aggiorna_PID_dei_quattro_motori);
-}
 
-void Controller::disable_PID()
-{  //TODO: Timer->pause() non fa funzionare i motori...
-   //      la pezza e' sugli interrupt, STUDIA i Timer e chasnnel
-   Timer_per_pid->detachInterrupt();
-   for (int i=0;i<4;i++)
-   {
-      pids[i].Reset();
-   }
-}
 
 Controller controller;
