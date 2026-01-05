@@ -41,9 +41,7 @@ public:
    static void aggiorna_RPM_dei_quattro_motori();
    static void aggiorna_PID_dei_quattro_motori();
 
-   static void enable_PID();
 
-   static void disable_PID();
 
    static HardwareTimer *Timer_per_rpm ;
    static HardwareTimer *Timer_per_pid ;
