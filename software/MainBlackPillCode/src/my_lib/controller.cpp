@@ -67,13 +67,16 @@ void Controller::init(){
       pids[i].SetProportionalMode(QuickPID::pMode::pOnError);
    }
 
-#ifndef NO_PID 
+#ifdef NO_PID
+#warning PID DISABILITATO !!! Are you sure ?
+#elifdef
    // TIMER PID
    Timer_per_pid = new HardwareTimer(TIM9); // TODO: definire alias per TIM9 e spostare in robopin.h
 
    Timer_per_pid->setOverflow(1000 / INTERVALLO_CAMPIONAMENTO_PID, HERTZ_FORMAT);
    Timer_per_pid->attachInterrupt(aggiorna_PID_dei_quattro_motori);
    Timer_per_pid->resume();
+#elifdef
 #endif
 
 }
