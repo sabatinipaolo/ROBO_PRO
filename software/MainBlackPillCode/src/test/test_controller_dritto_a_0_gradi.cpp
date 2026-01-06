@@ -1,10 +1,14 @@
 #include <Arduino.h>
 #include "controller.h"
-float target=350;
+#include "oled.h";
+
+float target=410;
 
 void setup()
 {    
     controller.init();
+    oled.begin();
+
     Serial.begin(115200);
 
     { // starting serial e programma
@@ -35,6 +39,7 @@ void setup()
 void loop()
 {
 
+    oled.stampa4rpm(controller);
 
 
     
