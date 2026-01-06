@@ -48,8 +48,10 @@ public:
    static HardwareTimer *Timer_per_pid ;
 
 #ifdef LOGGA_RPM
-   void stampa_log_RPM_4_motori()
-
+   void stampa_log_RPM_4_motori(){
+      stampa_log_RPM_4_motori(0);
+   }
+   void stampa_log_RPM_4_motori(int ritardo)
    {
       for (int i_riga = 0; i_riga < dim_log_RPM; i_riga++)
       {
@@ -61,6 +63,7 @@ public:
             Serial.print(" ");
          };
          Serial.println();
+         delay(ritardo);
 
       }
    }
