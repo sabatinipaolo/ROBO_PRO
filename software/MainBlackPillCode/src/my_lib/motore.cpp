@@ -115,7 +115,11 @@ void Motore::aggiorna_lettura_rpm()
     //_rpm = rpm_raw;
     //_rpm += ALPHA * (rpm_raw - _rpm);  //filtro misura se occorre 
 
-    _rpm += ALPHA * (rpm_raw - _rpm);
+    //_rpm += ALPHA * (rpm_raw - _rpm);
+
+    float rpm_filt = filtra(rpm_raw);
+
+    _rpm += ALPHA * (rpm_filt - _rpm);
 
     #ifdef LOGGA_RPM
       logga_RPM();
