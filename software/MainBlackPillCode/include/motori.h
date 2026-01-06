@@ -4,7 +4,9 @@
 #include <Arduino.h>
 #include "robotpropin.h"
 
-#define dim_log_RPM 1024
+#define dim_log_RPM 300
+
+#define DIM_BUFFER_MEDIE_RPM 10
 
 #define MIN_PWM 80
 #define MAX_PWM 255
@@ -12,7 +14,7 @@
 //TODO: sono define che dovrebbero essere spostati in controller
 // ma vengono usate anche qui: cattivo design?
 #define IMPULSI_PER_GIRO  (30*7.0f) 
-#define INTERVALLO_CAMPIONAMENTO_RPM  20 // us 
+#define INTERVALLO_CAMPIONAMENTO_RPM  10 // us 
 #define ALPHA  0.20f  //filtro anti rumore se serve 
 
 class Motore
@@ -69,6 +71,38 @@ public:
     volatile unsigned long conta_impulsi_encoder = 0;
              unsigned long ultimo_orario_campionamento = millis();
              unsigned long ultimo_conteggio_impulsi =0 ;
+    
+    //variabili per filtro con media mobile :
+    float buffer[DIM_BUFFER_MEDIE_RPM]={0};
+    int bufferSize=DIM_BUFFER_MEDIE_RPM;
+    int currentIndex=0;
+    float sum=0;
+    bool bufferFilled=false;  //se non è stato riempito il buffer la media non è su Dimensione ma sul numero elementi inseriti
+    
+    float filtra(float nuova_RPM) {
+      sum -= buffer[currentIndex];
+      buffer[currentIndex] = nuova_RPM;
+      sum += nuova_RPM;
+      currentIndex = (currentIndex + 1) % bufferSize;
+      if(currentIndex == 0) bufferFilled = true;  
+
+      int validElements = ( bufferFilled ? bufferSize : currentIndex) ;
+      if(validElements > 0) {
+        return sum / validElements;
+      } else {
+        return 0;
+      }
+    }
+
+    void reset_medie_RPM()
+    {
+      currentIndex = 0;
+      sum = 0.0;
+      bufferFilled = false;
+      for (int i = 0; i < bufferSize; i++)  //TODO: Non sarebbe inutile?
+        buffer[i] = 0.0;
+    }
+
 
 #ifdef LOGGA_RPM
            public:
