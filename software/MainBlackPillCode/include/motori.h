@@ -9,7 +9,7 @@
 #define dim_log_impulsi 300
 
 
-#define DIM_BUFFER_MEDIE_RPM 10
+#define DIM_BUFFER_MEDIE_RPM 8
 
 #define DIM_BUFFER_MEDIE_IMPULSI 8
 
