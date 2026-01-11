@@ -4,6 +4,7 @@
 #include "motori.h"
 #include "robotpropin.h"
 #include "controller.h"
+#include "oled.h"
 
 
 constexpr float radice2_su2 = 0.70710678118654752440084436210485;
