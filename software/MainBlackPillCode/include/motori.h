@@ -6,6 +6,9 @@
 
 #define dim_log_RPM 300
 
+#define dim_log_impulsi 300
+
+
 #define DIM_BUFFER_MEDIE_RPM 10
 
 #define MIN_PWM 80
@@ -124,6 +127,22 @@ public:
                  finito_log = true;
                }
              }
+
+#endif
+
+#ifdef LOGGA_IMPULSI
+           public:
+             unsigned long int ultimo_orario_campionamento_impulsi=0;
+             unsigned long int  log_impulsi[dim_log_impulsi];
+             int indice_log_impulsi = 0;
+             bool finito_log_impulsi = false;
+
+             void reset_log_impulsi(){
+              ultimo_orario_campionamento_impulsi=0;
+              indice_log_impulsi=0;
+              finito_log_impulsi= false;
+             }
+
 #endif
 };
 

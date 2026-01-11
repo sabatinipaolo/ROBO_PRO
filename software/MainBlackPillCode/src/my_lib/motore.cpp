@@ -124,7 +124,26 @@ void Motore::aggiorna_lettura_rpm()
     #ifdef LOGGA_RPM
       logga_RPM();
     #endif
-    
+
+#ifdef LOGGA_IMPULSI
+      if (!finito_log_impulsi)
+      {
+        //      Serial.print("non ho FINITO");
+        unsigned long int now = millis();
+        ;
+        //  if ((now - ultimo_orario_campionamento_impulsi)> tempo_campionamento_impulsi_ms) {
+        //    Serial.print("campiono");
+        //         ultimo_orario_campionamento_impulsi=now;
+        log_impulsi[indice_log_impulsi] = cnt;
+        indice_log_impulsi++;
+        if (indice_log_impulsi == dim_log_impulsi)
+        {
+          indice_log_impulsi = 0;
+          finito_log_impulsi = true;
+        }
+        //}
+      }
+#endif
 }
 
 void Motore::set_target_RPM(float rpm ){
