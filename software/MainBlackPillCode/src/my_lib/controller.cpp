@@ -49,12 +49,7 @@ void Controller::init(){
    attachInterrupt(digitalPinToInterrupt(PIN_ENC_PS1), ISR_encoder_Motore_PS, RISING);
    attachInterrupt(digitalPinToInterrupt(PIN_ENC_AS1), ISR_encoder_Motore_AS, RISING);
    
-   // TODO: e' veramente necessario?
-   _mot_ant_dx.reset_lettura_RPM();
-   _mot_pos_dx.reset_lettura_RPM();
-   _mot_pos_sx.reset_lettura_RPM();
-   _mot_ant_sx.reset_lettura_RPM();
-   
+  
    // TIMER RPM
    Timer_per_rpm = new HardwareTimer(TIM5); // TODO: definire alias per TIM5 e spostare in robopin.h
 
@@ -72,13 +67,18 @@ void Controller::init(){
       pids[i].SetProportionalMode(QuickPID::pMode::pOnError);
    }
 
+#ifdef NO_PID
+#warning PID DISABILITATO !!! Are you sure ?
+#elifdef
    // TIMER PID
    Timer_per_pid = new HardwareTimer(TIM9); // TODO: definire alias per TIM9 e spostare in robopin.h
 
-   Timer_per_pid->setOverflow(1000 / INTERVALLO_CAMPIONAMENTO_RPM, HERTZ_FORMAT);
+   Timer_per_pid->setOverflow(1000 / INTERVALLO_CAMPIONAMENTO_PID, HERTZ_FORMAT);
    Timer_per_pid->attachInterrupt(aggiorna_PID_dei_quattro_motori);
-   //enable_PID();
    Timer_per_pid->resume();
+#elifdef
+#endif
+
 }
 
 void Controller::aggiorna_RPM_dei_quattro_motori()
@@ -86,6 +86,7 @@ void Controller::aggiorna_RPM_dei_quattro_motori()
    for (int i = 0; i < 4; i++)
    {
       motori[i].aggiorna_lettura_rpm();
+
    }
 }
 
@@ -113,36 +114,14 @@ void Controller::aggiorna_PID_dei_quattro_motori()
 {
    for (int i = 0; i < 4; i++)
    {
-      if (motori[i].lettura_rpm_valida())
-      {
          pids[i].Compute();
          int pwm_cmd = motori[i].get_pwm_base() + (int) output_pids[i];
          pwm_cmd = constrain(pwm_cmd, -255, 255);
          motori[i].muovi((int) pwm_cmd);
 
-      }
    }
 }
 
-void Controller::enable_PID()
-{  
-   for (int i=0;i<4;i++)
-   {
-      pids[i].Reset();
-   }
-   //TODO: Timer->resume() non fa funzionare i motori...
-   //      la pezza e' sugli interrupt, STUDIA i Timer e chasnnel
-   Timer_per_pid->attachInterrupt(aggiorna_PID_dei_quattro_motori);
-}
 
-void Controller::disable_PID()
-{  //TODO: Timer->pause() non fa funzionare i motori...
-   //      la pezza e' sugli interrupt, STUDIA i Timer e chasnnel
-   Timer_per_pid->detachInterrupt();
-   for (int i=0;i<4;i++)
-   {
-      pids[i].Reset();
-   }
-}
 
 Controller controller;

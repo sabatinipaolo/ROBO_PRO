@@ -29,14 +29,15 @@ void Motore::stop()
 }
 
 void Motore::muovi(int pwm)
-{//TODO: ottimizzare 
-  if (_pwm == 0 && pwm != 0) {
-    reset_lettura_RPM();   // partenza
-  }
-
-  if ((_pwm > 0 && pwm < 0) || (_pwm < 0 && pwm > 0)) {
-    reset_lettura_RPM();   // cambio direzione
-  };
+{
+   #ifdef LOGGA_RPM
+      reset_log_RPM();
+   #endif
+    if ( (_pwm == 0) and (pwm!=0) )  //TODO: Anche per cambio direzione, forse da fermo a in moto è inutile
+      { //da fermo a in movimento 
+        reset_lettura_RPM();
+        reset_medie_impulsi();
+      }
     if(pwm==0 ) stop();
     else
     if (pwm > 0)
@@ -79,9 +80,12 @@ int Motore::rpm_to_pwm(int rpm)
     // return (int) map( rpm , 0, 400,0,255);
     // return (int) (0.97*rpm - 173);  //sulcampo  6.3V
     // return (int) (1.31*rpm - 442);  //a vuoto  6.3V
-    ritorno = (int)(1.33 * rpm - 439.80 + 15); // a vuoto  6.3V [80-255]  <-- [360 - 500]
-                                               //  +10 per avere un po+ di boost...
+    // ritorno = (int)(1.33 * rpm - 439.80 + 15); // a vuoto  6.3V [80-255]  <-- [360 - 500]//  +10 per avere un po+ di boost...
+    ritorno = (int)(1.28 * rpm - 405); // banco alimentatore  6.3V [80-255]<-- [360 - 500]
+  
+
   if (rpm < 0)
+
     ritorno = (int)-((1.33 * -rpm - 439.80 + 15));
 
   return ritorno;
@@ -99,54 +103,43 @@ void Motore::ISR_encoder()
     conta_impulsi_encoder--;
   }
 }
-
 void Motore::reset_lettura_RPM()
-{//TODO: spostare in controller?
-// reset_lettura_RPM() va chiamata solo quando:
-// - il motore parte da fermo
-// - il motore si ferma
-// - si cambia direzione
-// - si cambia modalità di controllo
-
-  noInterrupts();
-  ultimo_conteggio_impulsi = conta_impulsi_encoder;
-  interrupts();
-  _rpm_valida = false;
-
-  ultimo_orario_campionamento = millis();
-
+{ //conta_impulsi_encoder=0;
+  ultimo_conteggio_impulsi=0;
+  _rpm=0;
+  //TODO resettare le medie ?
 }
-
 void Motore::aggiorna_lettura_rpm()
 {
     noInterrupts();
     unsigned long cnt = conta_impulsi_encoder;
     interrupts();
 
-    long  delta = cnt - ultimo_conteggio_impulsi;
+    long  delta = filtra_impulsi(cnt - ultimo_conteggio_impulsi);
     ultimo_conteggio_impulsi = cnt;
     
-    #ifdef LOGGA_IMPULSI
-    log_impulsi[indice_impulsi  ] = delta;
-    indice_impulsi++;
-    #endif
 
     float rpm_raw =
       (float)delta * 60000.0f / (IMPULSI_PER_GIRO * INTERVALLO_CAMPIONAMENTO_RPM);
 
-    //_rpm = rpm_raw;
-    //_rpm += ALPHA * (rpm_raw - _rpm);  //filtro misura se occorre 
-
-    _rpm += ALPHA * (rpm_raw - _rpm);
-
+    _rpm=filtra(rpm_raw);
     #ifdef LOGGA_RPM
-    log_rpm[indice_rpm  ] = _rpm;
-    indice_rpm++;
+      logga_RPM();
     #endif
 
-    
-    _rpm_valida = true;
-
+#ifdef LOGGA_IMPULSI
+      //TODO: trasfomrre in metodo ..
+      if (!finito_log_impulsi)
+      {
+        log_impulsi[indice_log_impulsi] = (delta);
+        indice_log_impulsi++;
+        if (indice_log_impulsi == dim_log_impulsi)
+        {
+          indice_log_impulsi = 0;
+          finito_log_impulsi = true;
+        }
+      }
+#endif
 }
 
 void Motore::set_target_RPM(float rpm ){

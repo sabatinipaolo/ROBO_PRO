@@ -3,6 +3,7 @@
 
 #include <QuickPID.h>
 #include "motori.h"
+#define INTERVALLO_CAMPIONAMENTO_PID  150 // us 
 
 class Controller
 {
@@ -41,15 +42,36 @@ public:
    static void aggiorna_RPM_dei_quattro_motori();
    static void aggiorna_PID_dei_quattro_motori();
 
-   static void enable_PID();
 
-   static void disable_PID();
 
    static HardwareTimer *Timer_per_rpm ;
    static HardwareTimer *Timer_per_pid ;
-};
 
-extern Controller controller;
+#ifdef LOGGA_RPM
+   void stampa_log_RPM_4_motori(){
+      stampa_log_RPM_4_motori(0);
+   }
+   void stampa_log_RPM_4_motori(int ritardo)
+   {
+      for (int i_riga = 0; i_riga < dim_log_RPM; i_riga++)
+      {
+         Serial.print(i_riga * INTERVALLO_CAMPIONAMENTO_RPM);
+         Serial.print(" ");
+         for (int im = 0; im < 4; im++)
+         {
+            Serial.print(motori[im].log_RPM[i_riga]);
+            Serial.print(" ");
+         };
+         Serial.println();
+         delay(ritardo);
+
+      }
+   }
+
+#endif
+   };
+
+   extern Controller controller;
 
 #endif
 

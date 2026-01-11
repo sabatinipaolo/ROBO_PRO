@@ -1,109 +1,84 @@
 #include <Arduino.h>
 #include "controller.h"
+
+
+//ESEGUIRE CON   -D NO_PID in platform.ini
+/////////////////////////////////////////
 #define PWM_MIN 80
 
-Controller c;
 
-float pwm [ 255 ];
-float minimo [ 255 ];
-float maximo [ 255 ] ;
-float medio [ 255 ];
-
-void stampa(int j,int pwm)
-        {Serial.print( pwm );
-        Serial.print( " , " );
-        SerialUSB.print( minimo[j] );
-        Serial.print( " , " );
-        Serial.print( medio[j] );
-        Serial.print( " , " );
-        Serial.print( maximo[j] );
-        Serial.println( " , " );}
+float medio[4][255];
 
 
 void setup()
-{
+{   controller.init();
 
-  Serial.begin(115200);
-//   while (!Serial1)
-//     ;
-  Serial.println("Starting program ");    
-  
-  for (int i = 10; i>0;i--){
-        Serial.print("inizio misura tra ");
-        Serial.println(i);
-        delay(333);
-    };
+    for (int i = 0; i < 4; i++)
+            controller.motori[i].muovi(200);
 
+   {
+        Serial.begin(115200);
+        //   while (!Serial1)
+        //     ;
+        Serial.println("Starting program ");
 
-    
-for (int index_m=0;index_m<1;index_m++){
-    
-    Motore &m = c.motori[index_m];
-
-    Serial.println("==============================");
-    Serial.println( index_m );
-    Serial.println("==============================");
-    
-    for (int j = 0, pwm = PWM_MIN;
-         pwm <= 255;
-         j++, pwm += 5)
-    {
-        for (int i=0; i<4;i++) c.motori[i].muovi(pwm);
-        //m.muovi( pwm ); 
-        delay(2000);
-
-        minimo[j]=10000; maximo[j]=-10000; medio[j]=0;
-        int n_misure = 0;
-        while (n_misure <= 10)
+        for (int i = 10; i > 0; i--)
         {
-            if (m._rpm_valida)
-             {
-                float rpm= m._rpm;
-                if (rpm <minimo[j]) minimo[j]=rpm;
-                if (rpm >maximo[j]) maximo[j]=rpm;    
-                medio[j]+=rpm;
-                n_misure ++; 
+            Serial.print("inizio misura tra ");
+            Serial.println(i);
+            delay(333);
+        };
+    }
+
+
+    for (int j_pwm = 0, pwm = PWM_MIN;
+         pwm <= 255;
+         j_pwm++, pwm += 5)
+    {
+//d Serial.println(" uno ");
+        for (int i = 0; i < 4; i++)
+            controller.motori[i].muovi(pwm);
+
+        delay(1500);
+//d                                 Serial.println(" due ");
+        for (int index_m = 0; index_m < 4; index_m++)
+        {   
+ //d            Serial.println(" tre ");
+            medio[index_m][j_pwm] = 0;
+
+            int n_misure = 0;
+            while (n_misure <= 10)
+            {
+ //d            Serial.println(" quattr ");                
+                medio[index_m][j_pwm] += controller.motori[index_m].get_rpm();
+                n_misure++;
 
                 delay(100);
-             };
-        };
+            };
 
-        medio[j] /= n_misure;
+            medio[index_m][j_pwm] /= n_misure;
+        }
 
-        stampa(j,pwm);
-        
-        for (int i=0; i<4;i++) c.motori[i].stop();
-        delay(2000);
+        Serial.print(pwm);
+        Serial.print(" ");
 
+        for (int index_m = 0; index_m < 4; index_m++)
+        {
+            Serial.print(medio[index_m][j_pwm]);
+            Serial.print(" ");
+        }
 
+        Serial.println();
 
+        for (int i = 0; i < 4; i++)
+            controller.motori[i].stop();
+        delay(1500);
     }
-}
 
-}
-
-void loop(){
-  
-for (int index_m=0;index_m<1;index_m++){
     
-    Motore &m = c.motori[index_m];
-
-    Serial.println("============VIUALIZZO==================");
-    Serial.println( index_m );
-    Serial.println("============VIUALIZZO==================");
-    
-    for (int j = 0, pwm = PWM_MIN;
-         pwm <= 255;
-         j++, pwm += 5)
-    {
- 
-        stampa(j,pwm);
-        
-        m.stop();
-        delay(500);
-
-
-
-    }
 }
+
+void loop()
+{
+    
 }

@@ -1,18 +1,19 @@
 #include <Arduino.h>
 #include "controller.h"
-float target=-400;
 
-//per test usiano la curva uguale per tutti i motori
-float target_to_pwm=controller._mot_ant_dx.rpm_to_pwm(target);    
-
+/// serve a loggare le rpm con pid o senza :
+/// in platformio.ini ci sono i build flag per farlo ...
 
 
 void stampa_rpm_da_loop( int indice_motore)
 {   Motore &m=controller.motori[indice_motore];
 
+    {
         float rpm=m.get_rpm();
         float pwm=m.get_pwm();
         float pwm_base=m.get_pwm_base();
+        Serial.print(" motore n. = ");
+        Serial.print(indice_motore);
 
         Serial.print(" m.rpm = ");
         Serial.print(rpm);
@@ -20,7 +21,7 @@ void stampa_rpm_da_loop( int indice_motore)
         Serial.print(" / ");
         Serial.print(m._rpm_target);
         Serial.print(" topwm ");
-        Serial.print(target_to_pwm);
+        //Serial.print(target_to_pwm);
         
         Serial.print(" m.pwmbase = ");
         Serial.print(pwm_base);
@@ -32,43 +33,54 @@ void stampa_rpm_da_loop( int indice_motore)
         Serial.print(controller.output_pids[indice_motore]);
 
         Serial.println();
-
+    }
 }
 
-void setup()
-{    
-    controller.init();
-    //controller.disable_PID();
+unsigned long int ora_start=0;
 
-    Serial.begin(115200);
+
+
+void setup()
+{        
+
+    controller.init();
+
 
     { // starting serial e programma
         Serial.begin(115200);
         while (!Serial1)
             ;
-        Serial.println("Starting  =>   test_controller_RPM_e_PID");
+        Serial.println("Starting  =>  test_controller_stampa_RPM.cp.cpp");
 
         for (int i = 10; i > 0; i--)
         {
             Serial.print("inizio tra ");
             Serial.println(i);
-            delay(200);
+            delay(600);
         };
-    }
 
-    for (int i=0;i<4;i++){
-    controller.motori[i].set_target_RPM(target);
-    delay (22); // attende 1 o 2 misure
+        Serial.println("Sarted  => test_controller_stampa_RPM.cp.cpp");
     }
+    
+    for (int i=0;i<4;i++){
+        controller.motori[i].muovi(200);
+    };
+
 }
 
 void loop()
 {
-    for (int i=0;i<4;i++){
-        stampa_rpm_da_loop(i);
-    };
-    Serial.println();
 
-    delay(1000);
-    
+    for (int i = 0; i < 4; i++)
+    {
+        Serial.print(" ");
+        for (int im = 0; im < 4; im++)
+        {
+            Serial.print(controller.motori[im].get_rpm());
+            Serial.print(" ");
+        };
+        Serial.println();
+    }
+
+    delay(100);
 }
