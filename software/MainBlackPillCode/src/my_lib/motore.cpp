@@ -33,6 +33,11 @@ void Motore::muovi(int pwm)
    #ifdef LOGGA_RPM
       reset_log_RPM();
    #endif
+    if ( (_pwm == 0) and (pwm!=0) )  //TODO: Anche per cambio direzione, forse da fermo a in moto è inutile
+      { //da fermo a in movimento 
+        reset_lettura_RPM();
+        reset_medie_impulsi();
+      }
     if(pwm==0 ) stop();
     else
     if (pwm > 0)
@@ -98,14 +103,19 @@ void Motore::ISR_encoder()
     conta_impulsi_encoder--;
   }
 }
-
+void Motore::reset_lettura_RPM()
+{ //conta_impulsi_encoder=0;
+  ultimo_conteggio_impulsi=0;
+  _rpm=0;
+  //TODO resettare le medie ?
+}
 void Motore::aggiorna_lettura_rpm()
 {
     noInterrupts();
     unsigned long cnt = conta_impulsi_encoder;
     interrupts();
 
-    long  delta = cnt - ultimo_conteggio_impulsi;
+    long  delta = filtra_impulsi(cnt - ultimo_conteggio_impulsi);
     ultimo_conteggio_impulsi = cnt;
     
 
@@ -117,31 +127,27 @@ void Motore::aggiorna_lettura_rpm()
 
     //_rpm += ALPHA * (rpm_raw - _rpm);
 
-    float rpm_filt = filtra(rpm_raw);
+    // float rpm_filt = filtra(rpm_raw);
 
-    _rpm += ALPHA * (rpm_filt - _rpm);
+    // _rpm += ALPHA * (rpm_filt - _rpm);
 
+    _rpm = rpm_raw;
+    
     #ifdef LOGGA_RPM
       logga_RPM();
     #endif
 
 #ifdef LOGGA_IMPULSI
+      //TODO: trasfomrre in metodo ..
       if (!finito_log_impulsi)
       {
-        //      Serial.print("non ho FINITO");
-        unsigned long int now = millis();
-        ;
-        //  if ((now - ultimo_orario_campionamento_impulsi)> tempo_campionamento_impulsi_ms) {
-        //    Serial.print("campiono");
-        //         ultimo_orario_campionamento_impulsi=now;
-        log_impulsi[indice_log_impulsi] = cnt;
+        log_impulsi[indice_log_impulsi] = (delta);
         indice_log_impulsi++;
         if (indice_log_impulsi == dim_log_impulsi)
         {
           indice_log_impulsi = 0;
           finito_log_impulsi = true;
         }
-        //}
       }
 #endif
 }

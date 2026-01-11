@@ -26,15 +26,17 @@ void setup()
     // accendo i motori
     for (int im = 0; im < 4; im++)
     {
-        controller.motori[im].muovi(200);
+        controller.motori[im].muovi(120);
     }
 
     delay(1000); // atndo che la velocità si stabilizzi;
 
+    // dopo che la velocità è stabile comincio a loggare
     for (int im = 0; im < 4; im++)
     {
         controller.motori[im].reset_log_impulsi();
-    } // dopo che la velocità è stabile comincio a loggare
+
+    } 
 
     delay((dim_log_impulsi * INTERVALLO_CAMPIONAMENTO_RPM) + 1000); // attendo che si riempia la log +1 sec per prudenza..
 
@@ -47,15 +49,14 @@ void setup()
 void loop()
 {
 
-    for (int i = 1; i < dim_log_impulsi; i++)
+    for (int i = 0; i < dim_log_impulsi; i++)
     {
 
         Serial.print(i * INTERVALLO_CAMPIONAMENTO_RPM);
         for (int im = 0; im < 4; im++)
         {
             Serial.print(" ");
-            Serial.print(controller.motori[im].log_impulsi[i] -
-                         controller.motori[im].log_impulsi[i - 1]);
+            Serial.print(controller.motori[im].log_impulsi[i]);
         }
         Serial.println();
         delay(100);

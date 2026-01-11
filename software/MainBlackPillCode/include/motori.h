@@ -11,13 +11,16 @@
 
 #define DIM_BUFFER_MEDIE_RPM 10
 
+#define DIM_BUFFER_MEDIE_IMPULSI 8
+
+
 #define MIN_PWM 80
 #define MAX_PWM 255
 
 //TODO: sono define che dovrebbero essere spostati in controller
 // ma vengono usate anche qui: cattivo design?
 #define IMPULSI_PER_GIRO  (30*7.0f) 
-#define INTERVALLO_CAMPIONAMENTO_RPM  10 // us 
+#define INTERVALLO_CAMPIONAMENTO_RPM  5 // us 
 #define ALPHA  0.20f  //filtro anti rumore se serve 
 
 class Motore
@@ -40,7 +43,9 @@ public:
 
     int rpm_to_pwm(int rpm);
     void ISR_encoder();
- 
+
+    void reset_lettura_RPM();
+
     void aggiorna_lettura_rpm();
 
     void set_target_RPM(float rpm);
@@ -82,6 +87,14 @@ public:
     float sum=0;
     bool bufferFilled=false;  //se non è stato riempito il buffer la media non è su Dimensione ma sul numero elementi inseriti
     
+    //variabili per filtro con media mobile su IMPULSI:
+    long int buffer_impulsi[DIM_BUFFER_MEDIE_IMPULSI]={0};
+    int bufferSize_impulsi=DIM_BUFFER_MEDIE_IMPULSI;
+    int currentIndex_impulsi=0;
+    float sum_impulsi=0;
+    bool buffer_impulsi_Filled=false;  //se non è stato riempito il buffer la media non è su Dimensione ma sul numero elementi inseriti
+ 
+
     float filtra(float nuova_RPM) {
       sum -= buffer[currentIndex];
       buffer[currentIndex] = nuova_RPM;
@@ -91,7 +104,9 @@ public:
 
       int validElements = ( bufferFilled ? bufferSize : currentIndex) ;
       if(validElements > 0) {
-        return sum / validElements;
+        float media = sum / validElements;
+        return ( (media > 0) ? (int) (media+0.5f) : (int) (media -0.5f)) ;
+
       } else {
         return 0;
       }
@@ -105,6 +120,33 @@ public:
       for (int i = 0; i < bufferSize; i++)  //TODO: Non sarebbe inutile?
         buffer[i] = 0.0;
     }
+
+    long int filtra_impulsi( long int num_impulsi) {
+      
+      sum_impulsi -= buffer_impulsi[currentIndex_impulsi];
+      buffer_impulsi[currentIndex_impulsi] = num_impulsi;
+      sum_impulsi += num_impulsi;
+      currentIndex_impulsi = (currentIndex_impulsi + 1) % bufferSize_impulsi;
+      if(currentIndex_impulsi == 0) buffer_impulsi_Filled = true;  
+
+      int validElements = ( buffer_impulsi_Filled ? bufferSize_impulsi : currentIndex_impulsi) ;
+      if(validElements > 0) {
+        float media = sum_impulsi / validElements;
+        return ( (media > 0) ? (int) media+0.5f : media-0.5f) ;
+      } else {
+        return num_impulsi;
+      }
+    }
+    
+    void reset_medie_impulsi()
+    {
+      currentIndex_impulsi = 0;
+      sum_impulsi = 0.0;
+      buffer_impulsi_Filled = false;
+      for (int i = 0; i < bufferSize_impulsi; i++)  //TODO: Non sarebbe inutile?
+        buffer_impulsi[i] = 0.0;
+    }
+
 
 
 #ifdef LOGGA_RPM
@@ -132,13 +174,11 @@ public:
 
 #ifdef LOGGA_IMPULSI
            public:
-             unsigned long int ultimo_orario_campionamento_impulsi=0;
-             unsigned long int  log_impulsi[dim_log_impulsi];
+             long int  log_impulsi[dim_log_impulsi];
              int indice_log_impulsi = 0;
              bool finito_log_impulsi = false;
 
              void reset_log_impulsi(){
-              ultimo_orario_campionamento_impulsi=0;
               indice_log_impulsi=0;
               finito_log_impulsi= false;
              }
