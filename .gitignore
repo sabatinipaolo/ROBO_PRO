@@ -1,2 +1,5 @@
 software/MainBlackPillCode/.vscode/extensions.json
 Arduino/Oled/.vscode/extensions.json
+*.FCStd1
+meccanica/stl_work/
+
