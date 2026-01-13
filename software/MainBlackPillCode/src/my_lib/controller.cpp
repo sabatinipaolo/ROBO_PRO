@@ -62,21 +62,25 @@ void Controller::init(){
       pids[i].SetSampleTimeUs(INTERVALLO_CAMPIONAMENTO_RPM * 1000);
       pids[i].SetOutputLimits(-50, 50);
       pids[i].SetMode(QuickPID::Control::timer);
-      pids[i].SetTunings(1.9, 0.1, 0.0); // Kp, Ki, Kd
+      //pids[i].SetTunings(3.0, 0.0, 0.0); // Kp, Ki, Kd
  //     pids[i].SetTunings(3.1, 0.3, 0.0); // Kp, Ki, Kd
       pids[i].SetProportionalMode(QuickPID::pMode::pOnError);
    }
+      pids[0].SetTunings(5, 8, 0.0); // Kp, Ki, Kd
+      pids[1].SetTunings(5, 8, 0.0); // Kp, Ki, Kd
+      pids[2].SetTunings(5, 2, 0.0); // Kp, Ki, Kd
+      pids[3].SetTunings(5, 8, 0.0); // Kp, Ki, Kd
 
 #ifdef NO_PID
 #warning PID DISABILITATO !!! Are you sure ?
-#elifdef
+#else
    // TIMER PID
    Timer_per_pid = new HardwareTimer(TIM9); // TODO: definire alias per TIM9 e spostare in robopin.h
 
    Timer_per_pid->setOverflow(1000 / INTERVALLO_CAMPIONAMENTO_PID, HERTZ_FORMAT);
    Timer_per_pid->attachInterrupt(aggiorna_PID_dei_quattro_motori);
    Timer_per_pid->resume();
-#elifdef
+#
 #endif
 
 }
@@ -119,8 +123,9 @@ void Controller::aggiorna_PID_dei_quattro_motori()
          pwm_cmd = constrain(pwm_cmd, -255, 255);
          motori[i].muovi((int) pwm_cmd);
 
+      }
    }
-}
+
 
 
 
