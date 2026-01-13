@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include "controller.h"
-#include "oled.h";
+#include "oled.h"
 
-float target=410;
+float target=400;
 
 void setup()
 {    
@@ -40,6 +40,7 @@ void loop()
 {
 
     oled.stampa4rpm(controller);
+    delay(300);
 
 
     
