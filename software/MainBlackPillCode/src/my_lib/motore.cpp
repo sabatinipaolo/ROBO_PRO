@@ -79,10 +79,13 @@ int Motore::rpm_to_pwm(int rpm)
     // return (int) map( rpm , 0, 400,0,255);
     // return (int) (0.97*rpm - 173);  //sulcampo  6.3V
     // return (int) (1.31*rpm - 442);  //a vuoto  6.3V
-    ritorno = (int)(1.33 * rpm - 439.80 + 15); // a vuoto  6.3V [80-255]  <-- [360 - 500]
+    //ritorno = (int)(1.33 * rpm - 439.80 + 15); // a vuoto  6.3V [80-255]  <-- [360 - 500]
                                                //  +10 per avere un po+ di boost...
+    ritorno = (int)(1.01 * rpm - 166 -55 ); // pile AA a 6VV [120-255]  <-- [270 - 400]
+    
+
   if (rpm < 0)
-    ritorno = (int)-((1.33 * -rpm - 439.80 + 15));
+    ritorno = (int)((1.05 * rpm +170 -160)); // pile AA a 6VV [120-255]  <-- [-260 - 400]
 
   return ritorno;
 };

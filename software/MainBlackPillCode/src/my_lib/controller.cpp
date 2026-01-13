@@ -67,11 +67,15 @@ void Controller::init(){
       pids[i].SetSampleTimeUs(INTERVALLO_CAMPIONAMENTO_RPM * 1000);
       pids[i].SetOutputLimits(-50, 50);
       pids[i].SetMode(QuickPID::Control::timer);
-      pids[i].SetTunings(1.9, 0.1, 0.0); // Kp, Ki, Kd
+      //pids[i].SetTunings(3.0, 0.0, 0.0); // Kp, Ki, Kd
  //     pids[i].SetTunings(3.1, 0.3, 0.0); // Kp, Ki, Kd
       pids[i].SetProportionalMode(QuickPID::pMode::pOnError);
    }
-
+      pids[0].SetTunings(18, 8, 0.0); // Kp, Ki, Kd
+      pids[1].SetTunings(3.0, 0.0, 0.0); // Kp, Ki, Kd
+      pids[2].SetTunings(3.0, 0.0, 0.0); // Kp, Ki, Kd
+      pids[3].SetTunings(3.0, 0.0, 0.0); // Kp, Ki, Kd
+      
    // TIMER PID
    Timer_per_pid = new HardwareTimer(TIM9); // TODO: definire alias per TIM9 e spostare in robopin.h
 
@@ -124,25 +128,6 @@ void Controller::aggiorna_PID_dei_quattro_motori()
    }
 }
 
-void Controller::enable_PID()
-{  
-   for (int i=0;i<4;i++)
-   {
-      pids[i].Reset();
-   }
-   //TODO: Timer->resume() non fa funzionare i motori...
-   //      la pezza e' sugli interrupt, STUDIA i Timer e chasnnel
-   Timer_per_pid->attachInterrupt(aggiorna_PID_dei_quattro_motori);
-}
 
-void Controller::disable_PID()
-{  //TODO: Timer->pause() non fa funzionare i motori...
-   //      la pezza e' sugli interrupt, STUDIA i Timer e chasnnel
-   Timer_per_pid->detachInterrupt();
-   for (int i=0;i<4;i++)
-   {
-      pids[i].Reset();
-   }
-}
 
 Controller controller;
