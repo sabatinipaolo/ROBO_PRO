@@ -2,11 +2,20 @@
 #define BUSSOLA_H
 
 #include <Adafruit_QMC5883P.h>
+#include "mediamobile.h"
+#include "logger.h"
 
 class Bussola : public Adafruit_QMC5883P
 {
 public:
-    Bussola() : Adafruit_QMC5883P() {};
+    Bussola() : Adafruit_QMC5883P(), mm_bussola(Media_mobile<float>(8))
+
+#ifdef LOGGA_BUSSOLA
+                ,
+                lb(Logger<float>(DIMENSIONE_LOG))
+#endif
+    {};
+
     bool begin();
 
     void set_calibration(float ox, float oy,float oz,
@@ -24,6 +33,8 @@ private:
     float _heading = 0;
     float _heading_iniziale = 0;
 
+    Media_mobile<float> mm_bussola;
+
 public:
     float _offset_x = 0;
     float _offset_y = 0;
@@ -31,6 +42,9 @@ public:
     float _scale_x = 0;
     float _scale_y = 0;
     float _scale_z = 0;
+#ifdef LOGGA_BUSSOLA
+    Logger<float> lb;
+#endif
 };
 
 extern Bussola bussola;

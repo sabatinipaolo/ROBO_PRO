@@ -26,9 +26,9 @@ bool Bussola::begin() {
     // { Serial.println("non sono pronto");
     //    delay(20);};
     update_heading();
-    _heading_iniziale=_heading;
-    Serial.println("_heading_iniziale");
-    Serial.println(_heading_iniziale);
+    _heading_iniziale=mm_bussola.filtra(_heading);
+    // Serial.println("_heading_iniziale");
+    // Serial.println(_heading_iniziale);
       
     return true;
 
@@ -132,10 +132,10 @@ bool Bussola::get_cal_magnetic(int16_t* x, int16_t* y, int16_t* z){
 }
 
 void Bussola::update_heading(){
-    Serial.println("Get_heading");
+    //Serial.println("Get_heading");
 
     if (!isDataReady())
-        {    Serial.println("     non sono pronti i dati");
+        {    //Serial.println("     non sono pronti i dati");
 
         return;
         };
@@ -144,17 +144,20 @@ void Bussola::update_heading(){
     int16_t z = 0;
 
     if (!get_cal_magnetic(&x, &y, &z)){
-        Serial.println("       non posso otttenere cal ");
+        //Serial.println("       non posso otttenere cal ");
 
         return ;
     }
-    Serial.println("Calcolo heading");
+    //Serial.println("Calcolo heading");
 	
     float heading =  atan2( x, y) * (180.0 / PI) - _heading_iniziale ;
 
     //TODO : fare meglio
     if (heading < -180)  heading +=360;
     if (heading >  180)  heading -=360;
+    #ifdef LOGGA_BUSSOLA
+        lb.logga(heading);
+    #endif   
     _heading= heading;
    
 
