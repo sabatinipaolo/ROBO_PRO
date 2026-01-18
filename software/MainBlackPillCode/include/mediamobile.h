@@ -8,12 +8,11 @@ private:
     T somma ; 
     T* buffer;
     int dimensione_buffer;
-    int numero_valori_inseriti;
     int indice;
     bool buffer_pieno;
 
 public:
-    Media_mobile(int dim ):dimensione_buffer(dim), numero_valori_inseriti(0), somma(T(0)), indice(0) ,buffer_pieno(false){
+    Media_mobile(int dim ):dimensione_buffer(dim),  somma(T(0)), indice(0) ,buffer_pieno(false){
         
         buffer = new T[dimensione_buffer];
         reset();
