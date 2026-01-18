@@ -3,15 +3,16 @@
 
 #include <Arduino.h>
 #include "robotpropin.h"
+#include "mediamobile.h"
 
 #define dim_log_RPM 300
 
 #define dim_log_impulsi 300
 
 
-#define DIM_BUFFER_MEDIE_RPM 8
+constexpr int DIM_BUFFER_MEDIE_RPM=8;
 
-#define DIM_BUFFER_MEDIE_IMPULSI 8
+constexpr int DIM_BUFFER_MEDIE_IMPULSI=8;
 
 
 #define MIN_PWM 80
@@ -80,72 +81,12 @@ public:
              unsigned long ultimo_orario_campionamento = millis();
              unsigned long ultimo_conteggio_impulsi =0 ;
     
-    //variabili per filtro con media mobile :
-    float buffer[DIM_BUFFER_MEDIE_RPM]={0};
-    int bufferSize=DIM_BUFFER_MEDIE_RPM;
-    int currentIndex=0;
-    float sum=0;
-    bool bufferFilled=false;  //se non è stato riempito il buffer la media non è su Dimensione ma sul numero elementi inseriti
-    
+    Media_mobile<float> mm_RPM;  
     //variabili per filtro con media mobile su IMPULSI:
-    long int buffer_impulsi[DIM_BUFFER_MEDIE_IMPULSI]={0};
-    int bufferSize_impulsi=DIM_BUFFER_MEDIE_IMPULSI;
-    int currentIndex_impulsi=0;
-    float sum_impulsi=0;
-    bool buffer_impulsi_Filled=false;  //se non è stato riempito il buffer la media non è su Dimensione ma sul numero elementi inseriti
+     //se non è stato riempito il buffer la media non è su Dimensione ma sul numero elementi inseriti
  
-
-    float filtra(float nuova_RPM) {
-      sum -= buffer[currentIndex];
-      buffer[currentIndex] = nuova_RPM;
-      sum += nuova_RPM;
-      currentIndex = (currentIndex + 1) % bufferSize;
-      if(currentIndex == 0) bufferFilled = true;  
-
-      int validElements = ( bufferFilled ? bufferSize : currentIndex) ;
-      if(validElements > 0) {
-        float media = sum / validElements;
-        return ( (media > 0) ? (int) (media+0.5f) : (int) (media -0.5f)) ;
-
-      } else {
-        return 0;
-      }
-    }
-
-    void reset_medie_RPM()
-    {
-      currentIndex = 0;
-      sum = 0.0;
-      bufferFilled = false;
-      for (int i = 0; i < bufferSize; i++)  //TODO: Non sarebbe inutile?
-        buffer[i] = 0.0;
-    }
-
-    long int filtra_impulsi( long int num_impulsi) {
-      
-      sum_impulsi -= buffer_impulsi[currentIndex_impulsi];
-      buffer_impulsi[currentIndex_impulsi] = num_impulsi;
-      sum_impulsi += num_impulsi;
-      currentIndex_impulsi = (currentIndex_impulsi + 1) % bufferSize_impulsi;
-      if(currentIndex_impulsi == 0) buffer_impulsi_Filled = true;  
-
-      int validElements = ( buffer_impulsi_Filled ? bufferSize_impulsi : currentIndex_impulsi) ;
-      if(validElements > 0) {
-        float media = sum_impulsi / validElements;
-        return ( (media > 0) ? (int) media+0.5f : media-0.5f) ;
-      } else {
-        return num_impulsi;
-      }
-    }
-    
-    void reset_medie_impulsi()
-    {
-      currentIndex_impulsi = 0;
-      sum_impulsi = 0.0;
-      buffer_impulsi_Filled = false;
-      for (int i = 0; i < bufferSize_impulsi; i++)  //TODO: Non sarebbe inutile?
-        buffer_impulsi[i] = 0.0;
-    }
+    Media_mobile<long int> mm_impulsi; 
+   
 
 
 

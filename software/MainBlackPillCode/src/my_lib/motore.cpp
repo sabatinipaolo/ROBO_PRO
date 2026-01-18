@@ -1,6 +1,8 @@
 #include "motori.h"
 Motore::Motore(int pin1, int pin2, int pin_enc1, int pin_enc2)
-    : _pin1(pin1), _pin2(pin2), _pin_enc1(pin_enc1),_pin_enc2(pin_enc2)
+    : _pin1(pin1), _pin2(pin2), _pin_enc1(pin_enc1),_pin_enc2(pin_enc2),
+       mm_RPM( Media_mobile<float>(DIM_BUFFER_MEDIE_RPM)),
+       mm_impulsi(Media_mobile<long int>(DIM_BUFFER_MEDIE_IMPULSI))
 {
     pinMode(_pin_enc1, INPUT_PULLUP);
     pinMode(_pin_enc2, INPUT_PULLUP);
@@ -36,7 +38,7 @@ void Motore::muovi(int pwm)
     if ( (_pwm == 0) and (pwm!=0) )  //TODO: Anche per cambio direzione, forse da fermo a in moto è inutile
       { //da fermo a in movimento 
         reset_lettura_RPM();
-        reset_medie_impulsi();
+        mm_impulsi.reset();
       }
     if(pwm==0 ) stop();
     else
@@ -115,14 +117,14 @@ void Motore::aggiorna_lettura_rpm()
     unsigned long cnt = conta_impulsi_encoder;
     interrupts();
 
-    long  delta = filtra_impulsi(cnt - ultimo_conteggio_impulsi);
+    long  delta = mm_impulsi.filtra(cnt - ultimo_conteggio_impulsi);
     ultimo_conteggio_impulsi = cnt;
     
 
     float rpm_raw =
       (float)delta * 60000.0f / (IMPULSI_PER_GIRO * INTERVALLO_CAMPIONAMENTO_RPM);
 
-    _rpm=filtra(rpm_raw);
+    _rpm=mm_RPM.filtra(rpm_raw);
     #ifdef LOGGA_RPM
       logga_RPM();
     #endif
