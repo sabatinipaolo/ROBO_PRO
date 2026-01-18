@@ -42,20 +42,23 @@ Controller::Controller()
 void Controller::init(){
   for (int i=0;i<4;i++) motori[i].stop();
   
-   // TODO: i pin degli encoder sono deginiti INPUT_PULLUP nei Motori: e' il caso di spostare qui?
+ #ifdef NO_RPM
+   #warning Misura RPM DISABILITATO !!! Are you sure ?
+ #else   
 
+   // TODO: i pin degli encoder sono deginiti INPUT_PULLUP nei Motori: e' il caso di spostare qui?
    attachInterrupt(digitalPinToInterrupt(PIN_ENC_AD1), ISR_encoder_Motore_AD, RISING);
    attachInterrupt(digitalPinToInterrupt(PIN_ENC_PD1), ISR_encoder_Motore_PD, RISING);
    attachInterrupt(digitalPinToInterrupt(PIN_ENC_PS1), ISR_encoder_Motore_PS, RISING);
    attachInterrupt(digitalPinToInterrupt(PIN_ENC_AS1), ISR_encoder_Motore_AS, RISING);
-   
-  
+
    // TIMER RPM
    Timer_per_rpm = new HardwareTimer(TIM5); // TODO: definire alias per TIM5 e spostare in robopin.h
 
    Timer_per_rpm->setOverflow(1000 / INTERVALLO_CAMPIONAMENTO_RPM, HERTZ_FORMAT);
    Timer_per_rpm->attachInterrupt(aggiorna_RPM_dei_quattro_motori);
    Timer_per_rpm->resume();
+#endif
 
    // SETTAGGIO PID PER MOTORI // pid_AD.SetAntiWindupMode(QuickPID::iAwMode::iAwClamp);
    for (int i=0; i<4 ; i++){
@@ -86,7 +89,7 @@ void Controller::init(){
 }
 
 void Controller::aggiorna_RPM_dei_quattro_motori()
-{ // dura circa 2 - 6 us (microsecondi)
+{ // dura circa 7 -8  us (microsecondi)
    for (int i = 0; i < 4; i++)
    {
       motori[i].aggiorna_lettura_rpm();
@@ -115,7 +118,7 @@ void Controller::ISR_encoder_Motore_AS()
 }
 
 void Controller::aggiorna_PID_dei_quattro_motori()
-{
+{  //dura 170 u sec ( microsecondi )
    for (int i = 0; i < 4; i++)
    {
          pids[i].Compute();

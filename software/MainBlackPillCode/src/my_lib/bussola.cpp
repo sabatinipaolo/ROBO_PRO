@@ -132,6 +132,11 @@ bool Bussola::get_cal_magnetic(int16_t* x, int16_t* y, int16_t* z){
 }
 
 void Bussola::update_heading(){
+    //durata da: 400 us a 1700us !!
+    //TODO:   verificare se le if servono veramente...
+    //        sostanzialmente se i dasti non sono pronti la lettura greazza non modifica
+    //        i valori di &x,&y,&z (vedi )
+
     //Serial.println("Get_heading");
 
     if (!isDataReady())
