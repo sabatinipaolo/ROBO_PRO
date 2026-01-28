@@ -29,7 +29,7 @@ class Motore
 
 public:
 
-    Motore(int pin1, int pin2, int pin_enc1, int pin_enc2);
+    Motore(int pin1, int pin2, int pin_pwm, int pin_enc1, int pin_enc2);
     
     Motore(const Motore&) = delete;             //impedisce copie di oggetti motori, Motore m(m2) (costruttore copia) genera errore
     Motore& operator=(const Motore&) = delete;  // m1=m2 genera errore
@@ -71,6 +71,7 @@ public:
     
     int _pin1;
     int _pin2;
+    int _pin_pwm;
     int _pin_enc1;
     int _pin_enc2;
 

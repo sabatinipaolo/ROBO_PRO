@@ -1,6 +1,6 @@
 #include "motori.h"
-Motore::Motore(int pin1, int pin2, int pin_enc1, int pin_enc2)
-    : _pin1(pin1), _pin2(pin2), _pin_enc1(pin_enc1),_pin_enc2(pin_enc2),
+Motore::Motore(int pin1, int pin2, int pin_pwm, int pin_enc1, int pin_enc2)
+    : _pin1(pin1), _pin2(pin2), _pin_pwm(pin_pwm),  _pin_enc1(pin_enc1),_pin_enc2(pin_enc2),
        mm_RPM( Media_mobile<float>(DIM_BUFFER_MEDIE_RPM)),
        mm_impulsi(Media_mobile<long int>(DIM_BUFFER_MEDIE_IMPULSI))
 {
@@ -8,6 +8,8 @@ Motore::Motore(int pin1, int pin2, int pin_enc1, int pin_enc2)
     pinMode(_pin_enc2, INPUT_PULLUP);
     pinMode(_pin1, OUTPUT);
     pinMode(_pin2, OUTPUT);
+    pinMode(_pin_pwm, OUTPUT);
+    
     stop();
     aggiorna_lettura_rpm();
    
@@ -26,8 +28,9 @@ void Motore::orario(int pwm)
 void Motore::stop()
 {
     _pwm=0;
-    analogWrite(_pin1, LOW);
-    analogWrite(_pin2, LOW);
+    digitalWrite(_pin1, LOW);
+    digitalWrite(_pin2, LOW);
+    analogWrite(_pin_pwm,LOW);
 }
 
 void Motore::muovi(int pwm)
@@ -44,18 +47,18 @@ void Motore::muovi(int pwm)
     else
     if (pwm > 0)
     {
-        //antiorario(pwm);
-        _pwm=pwm;
-        analogWrite(_pin1, pwm);
-        analogWrite(_pin2, LOW);
 
+        _pwm=pwm;
+        digitalWrite(_pin1, HIGH);
+        digitalWrite(_pin2, LOW);
+        analogWrite(_pin_pwm,pwm);
     }
     else if (pwm < 0)
     {
-        //orario(-pwm);
          _pwm=pwm;
-        analogWrite(_pin1, LOW);
-        analogWrite(_pin2, -pwm);
+        digitalWrite(_pin1, LOW);
+        digitalWrite(_pin2, -pwm);
+        analogWrite(_pin_pwm, -pwm);
     };
 
 }
@@ -105,6 +108,7 @@ void Motore::ISR_encoder()
     conta_impulsi_encoder--;
   }
 }
+
 void Motore::reset_lettura_RPM()
 { //conta_impulsi_encoder=0;
   ultimo_conteggio_impulsi=0;
