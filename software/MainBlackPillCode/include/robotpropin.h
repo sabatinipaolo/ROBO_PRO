@@ -77,39 +77,33 @@
 
 // POSTERIORE SINISTRO
 #define PIN_MOT_PS1       PA15
-#define PIN_MOT_PS2       PC14
+#define PIN_MOT_PS2       PB0
 #define PIN_PWM_PS        PA10   // TIM1_CH3
 
 // ANTERIORE SINISTRO
-#define PIN_MOT_AS1       PC15
-#define PIN_MOT_AS2       PB0
-#define PIN_PWM_AS        PB6    // TIM4_CH1
+#define PIN_MOT_AS1       PB1
+#define PIN_MOT_AS2       PB2
+#define PIN_PWM_AS        PB4    // TIM4_CH1
 
 
 /*************************************************
- * ENCODER – HARDWARE
+ * ENCODER – ISR
  *************************************************/
 
 // Encoder AD
-#define PIN_ENC_AD1       PA0    // TIM2_CH1
-#define PIN_ENC_AD2       PA1    // TIM2_CH2
+#define PIN_ENC_AD1       PA0    // EXTI0
+#define PIN_ENC_AD2       PA1    // EXTI1
 
 // Encoder PD
-#define PIN_ENC_PD1       PA6    // TIM3_CH1
-#define PIN_ENC_PD2       PA7    // TIM3_CH2
+#define PIN_ENC_PD1       PA5    // EXTI5
+#define PIN_ENC_PD2       PA6    // EXTI6
 
 // Encoder AS
-#define PIN_ENC_AS1       PB6    // TIM4_CH1
-#define PIN_ENC_AS2       PB7    // TIM4_CH2
+#define PIN_ENC_AS1       PA7    // EXTI7
+#define PIN_ENC_AS2       PB3    // EXTI3
 
-
-/*************************************************
- * ENCODER – SOFTWARE (EXTI)
- *************************************************/
-
-// Encoder PS (ISR)
-#define PIN_ENC_PS1       PB0
-#define PIN_ENC_PS2       PB2
+#define PIN_ENC_PS1       PB8    // EXTI8
+#define PIN_ENC_PS2       PB9    // EXTI9
 
 
 /*************************************************
@@ -123,8 +117,8 @@
 #define PIN_CDC_DP        PA12
 
 // I2C rimappato
-#define PIN_WIRE_SCL      PB8
-#define PIN_WIRE_SDA      PB9
+#define PIN_I2C_SCL      PB8
+#define PIN_I2C_SDA      PB9
 
 
 /*************************************************
