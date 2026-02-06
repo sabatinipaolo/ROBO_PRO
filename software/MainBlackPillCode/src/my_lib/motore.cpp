@@ -11,7 +11,6 @@ Motore::Motore(int pin1, int pin2, int pin_pwm, int pin_enc1, int pin_enc2)
     pinMode(_pin_pwm, OUTPUT);
     
     stop();
-    aggiorna_lettura_rpm();
    
 };
 
@@ -27,7 +26,7 @@ void Motore::orario(int pwm)
 
 void Motore::stop()
 {
-    _pwm=0;
+    _pwm=0;_rpm=0;_rpm_target=0;
     digitalWrite(_pin1, LOW);
     digitalWrite(_pin2, LOW);
     analogWrite(_pin_pwm,LOW);
@@ -87,11 +86,11 @@ int Motore::rpm_to_pwm(int rpm)
     // return (int) (1.31*rpm - 442);  //a vuoto  6.3V
     //ritorno = (int)(1.33 * rpm - 439.80 + 15); // a vuoto  6.3V [80-255]  <-- [360 - 500]
                                                //  +10 per avere un po+ di boost...
-    ritorno = (int)(1.01 * rpm - 166 -55 ); // pile AA a 6VV [120-255]  <-- [270 - 400]
+    ritorno = (int)(1.01 * rpm - 166 -30 ); // pile AA a 6VV [120-255]  <-- [270 - 400]
     
 
   if (rpm < 0)
-    ritorno = (int)((1.05 * rpm +170 -160)); // pile AA a 6VV [120-255]  <-- [-260 - 400]
+    ritorno = (int)((1.05 * rpm +170 +30)); // pile AA a 6VV [120-255]  <-- [-260 - 400]
 
   return ritorno;
 };
@@ -115,7 +114,7 @@ void Motore::reset_lettura_RPM()
   _rpm=0;
   //TODO resettare le medie ?
 }
-void Motore::aggiorna_lettura_rpm()
+void Motore::aggiorna_lettura_rpm(int delta_t) //TODO: passi il deltat peche' come costante è definita on controller ..sistemare!!
 {
     noInterrupts();
     unsigned long cnt = conta_impulsi_encoder;
@@ -126,9 +125,10 @@ void Motore::aggiorna_lettura_rpm()
     
 
     float rpm_raw =
-      (float)delta * 60000.0f / (IMPULSI_PER_GIRO * INTERVALLO_CAMPIONAMENTO_RPM);
+      (float)delta * 60000.0f / (IMPULSI_PER_GIRO * delta_t);
 
-    _rpm=mm_RPM.filtra(rpm_raw);
+    //_rpm=mm_RPM.filtra(rpm_raw);
+    _rpm= 0.8 * _rpm + 0.2 * rpm_raw;
     #ifdef LOGGA_RPM
       logga_RPM();
     #endif
@@ -159,5 +159,9 @@ void Motore::set_target_RPM(float rpm ){
   muovi ( _pwm );
 
 }
+float Motore::get_target_RPM( ){
+      return (_rpm_target);
+}
 
+ 
   

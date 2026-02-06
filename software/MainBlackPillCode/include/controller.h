@@ -3,7 +3,7 @@
 
 #include <QuickPID.h>
 #include "motori.h"
-#define INTERVALLO_CAMPIONAMENTO_PID  150 // us 
+#define INTERVALLO_CAMPIONAMENTO_PID  10 // ms 
 
 class Controller
 {

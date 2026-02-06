@@ -41,10 +41,7 @@ Controller::Controller()
 
 void Controller::init(){
   for (int i=0;i<4;i++) motori[i].stop();
-  
- #ifdef NO_RPM
-   #warning Misura RPM DISABILITATO !!! Are you sure ?
- #else   
+ 
 
    // TODO: i pin degli encoder sono deginiti INPUT_PULLUP nei Motori: e' il caso di spostare qui?
    attachInterrupt(digitalPinToInterrupt(PIN_ENC_AD1), ISR_encoder_Motore_AD, RISING);
@@ -52,27 +49,17 @@ void Controller::init(){
    attachInterrupt(digitalPinToInterrupt(PIN_ENC_PS1), ISR_encoder_Motore_PS, RISING);
    attachInterrupt(digitalPinToInterrupt(PIN_ENC_AS1), ISR_encoder_Motore_AS, RISING);
 
-   // TIMER RPM
-   Timer_per_rpm = new HardwareTimer(TIM5); // TODO: definire alias per TIM5 e spostare in robopin.h
-
-   Timer_per_rpm->setOverflow(1000 / INTERVALLO_CAMPIONAMENTO_RPM, HERTZ_FORMAT);
-   Timer_per_rpm->attachInterrupt(aggiorna_RPM_dei_quattro_motori);
-   Timer_per_rpm->resume();
-#endif
 
    // SETTAGGIO PID PER MOTORI // pid_AD.SetAntiWindupMode(QuickPID::iAwMode::iAwClamp);
    for (int i=0; i<4 ; i++){
-      pids[i].SetSampleTimeUs(INTERVALLO_CAMPIONAMENTO_RPM * 1000);
-      pids[i].SetOutputLimits(-50, 50);
+      pids[i].SetSampleTimeUs(INTERVALLO_CAMPIONAMENTO_PID * 1000);
+      pids[i].SetOutputLimits(-255, 255);
       pids[i].SetMode(QuickPID::Control::timer);
-      //pids[i].SetTunings(3.0, 0.0, 0.0); // Kp, Ki, Kd
- //     pids[i].SetTunings(3.1, 0.3, 0.0); // Kp, Ki, Kd
-      pids[i].SetProportionalMode(QuickPID::pMode::pOnError);
    }
-      pids[0].SetTunings(5, 8, 0.0); // Kp, Ki, Kd
-      pids[1].SetTunings(5, 8, 0.0); // Kp, Ki, Kd
-      pids[2].SetTunings(5, 2, 0.0); // Kp, Ki, Kd
-      pids[3].SetTunings(5, 8, 0.0); // Kp, Ki, Kd
+   pids[0].SetTunings(0.80, 0.3, 0.0); // Kp, Ki, Kd
+   pids[1].SetTunings(0.80, 0.3, 0.0);       // Kp, Ki, Kd
+   pids[2].SetTunings(0.80, 0.4, 0.0);       // Kp, Ki, Kd
+   pids[3].SetTunings(0.80, 0.4, 0.0);       // Kp, Ki, Kd
 
 #ifdef NO_PID
 #warning PID DISABILITATO !!! Are you sure ?
@@ -85,17 +72,9 @@ void Controller::init(){
    Timer_per_pid->resume();
 #
 #endif
-
 }
 
-void Controller::aggiorna_RPM_dei_quattro_motori()
-{ // dura circa 7 -8  us (microsecondi)
-   for (int i = 0; i < 4; i++)
-   {
-      motori[i].aggiorna_lettura_rpm();
 
-   }
-}
 
 void Controller::ISR_encoder_Motore_AD()
 {
@@ -121,15 +100,15 @@ void Controller::aggiorna_PID_dei_quattro_motori()
 {  //dura 170 u sec ( microsecondi )
    for (int i = 0; i < 4; i++)
    {
+      if (abs(motori[i].get_rpm() - motori[i].get_target_RPM())>7) //TODO: definire una costante ...
+      {
+         motori[i].aggiorna_lettura_rpm(INTERVALLO_CAMPIONAMENTO_PID); // TODO: gli passo l'intervallo perche' è definito altrove .. sistemare!!
          pids[i].Compute();
-         int pwm_cmd = motori[i].get_pwm_base() + (int) output_pids[i];
-         pwm_cmd = constrain(pwm_cmd, -255, 255);
-         motori[i].muovi((int) pwm_cmd);
-
+         int pwm_cmd = (int)output_pids[i];
+         pwm_cmd = constrain(pwm_cmd, -255, 255); // TODO: ridondante?
+         motori[i].muovi((int)pwm_cmd); //TODO: meglio static cast ....?
       }
    }
-
-
-
+}
 
 Controller controller;

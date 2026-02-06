@@ -10,7 +10,7 @@
 #define dim_log_impulsi 300
 
 
-constexpr int DIM_BUFFER_MEDIE_RPM=8;
+constexpr int DIM_BUFFER_MEDIE_RPM=2;
 
 constexpr int DIM_BUFFER_MEDIE_IMPULSI=8;
 
@@ -47,10 +47,12 @@ public:
 
     void reset_lettura_RPM();
 
-    void aggiorna_lettura_rpm();
+    void aggiorna_lettura_rpm(int delta_t);
 
     void set_target_RPM(float rpm);
-    
+
+    float get_target_RPM();
+
     //TODO: in attesa che  vengano rese private usa comunque ueste:
       float get_rpm(){ return _rpm;};
       float get_pwm(){ return _pwm;};
