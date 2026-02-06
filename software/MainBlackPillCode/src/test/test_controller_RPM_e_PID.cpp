@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include "controller.h"
-#include "oled.h"
+//#include "oled.h"
 
-float target=400;
+float target=280;
 
 // //per test usiano la curva uguale per tutti i motori
 float target_to_pwm=controller._mot_ant_dx.rpm_to_pwm(target);    
@@ -38,16 +38,21 @@ void stampa_rpm_da_loop( int indice_motore)
 }
 
 void setup()
-{    
+{    pinMode(LED_BUILTIN,OUTPUT);
     controller.init();
-    oled.begin();
+    //oled.begin();
     //controller.disable_PID();
 
     Serial.begin(115200);
 
     { // starting serial e programma
         Serial.begin(115200);
-        while (!Serial1)
+        while (!Serial){
+            digitalWrite(LED_BUILTIN,HIGH);
+            delay(300);
+            digitalWrite(LED_BUILTIN,LOW);
+            delay(300);
+        }
             ;
         Serial.println("Starting  =>   test_controller_RPM_e_PID");
 
@@ -71,7 +76,7 @@ void loop()
         stampa_rpm_da_loop(i);
     };
     Serial.println();
-    oled.stampa4rpm(controller);
-    delay(1000);
+    //oled.stampa4rpm(controller);
+    delay(100);
     
 }
