@@ -2,7 +2,7 @@
 #include "controller.h"
 #include "oled.h"
 
-float target=400;
+float target=300;
 
 void setup()
 {    
