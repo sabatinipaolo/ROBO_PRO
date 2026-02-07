@@ -10,7 +10,7 @@
 #define dim_log_impulsi 300
 
 
-constexpr int DIM_BUFFER_MEDIE_RPM=2;
+//constexpr int DIM_BUFFER_MEDIE_RPM=2;
 
 constexpr int DIM_BUFFER_MEDIE_IMPULSI=8;
 
@@ -83,7 +83,7 @@ public:
              unsigned long ultimo_orario_campionamento = millis();
              unsigned long ultimo_conteggio_impulsi =0 ;
     
-    Media_mobile<float> mm_RPM;  
+    //Media_mobile<float> mm_RPM;  
     //variabili per filtro con media mobile su IMPULSI:
      //se non è stato riempito il buffer la media non è su Dimensione ma sul numero elementi inseriti
  

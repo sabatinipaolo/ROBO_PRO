@@ -1,7 +1,7 @@
 #include "motori.h"
 Motore::Motore(int pin1, int pin2, int pin_pwm, int pin_enc1, int pin_enc2)
     : _pin1(pin1), _pin2(pin2), _pin_pwm(pin_pwm),  _pin_enc1(pin_enc1),_pin_enc2(pin_enc2),
-       mm_RPM( Media_mobile<float>(DIM_BUFFER_MEDIE_RPM)),
+//       mm_RPM( Media_mobile<float>(DIM_BUFFER_MEDIE_RPM)),
        mm_impulsi(Media_mobile<long int>(DIM_BUFFER_MEDIE_IMPULSI))
 {
     pinMode(_pin_enc1, INPUT_PULLUP);
