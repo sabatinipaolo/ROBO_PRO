@@ -80,7 +80,7 @@ public:
   private:
     //variabili per calcolo RPM
     volatile unsigned long conta_impulsi_encoder = 0;
-             unsigned long ultimo_orario_campionamento = millis();
+//             unsigned long ultimo_orario_campionamento = millis();
              unsigned long ultimo_conteggio_impulsi =0 ;
     
     //Media_mobile<float> mm_RPM;  
