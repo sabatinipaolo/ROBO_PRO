@@ -29,7 +29,6 @@ float &Controller::output_pid_PS=output_pids[2];
 float &Controller::output_pid_AS=output_pids[3];
 
 
-HardwareTimer *Controller::Timer_per_rpm =nullptr;
 HardwareTimer *Controller::Timer_per_pid =nullptr;
 
 
@@ -97,7 +96,7 @@ void Controller::ISR_encoder_Motore_AS()
 }
 
 void Controller::aggiorna_PID_dei_quattro_motori()
-{  //dura 170 u sec ( microsecondi )
+{  //durata max 100 u sec ( microsecondi ) 
    for (int i = 0; i < 4; i++)
    {
       if (abs(motori[i].get_rpm() - motori[i].get_target_RPM())>7) //TODO: definire una costante ...

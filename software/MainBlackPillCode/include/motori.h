@@ -21,7 +21,6 @@ constexpr int DIM_BUFFER_MEDIE_IMPULSI=8;
 //TODO: sono define che dovrebbero essere spostati in controller
 // ma vengono usate anche qui: cattivo design?
 #define IMPULSI_PER_GIRO  (30*7.0f) 
-#define INTERVALLO_CAMPIONAMENTO_RPM  5 // us 
 #define ALPHA  0.20f  //filtro anti rumore se serve 
 
 class Motore

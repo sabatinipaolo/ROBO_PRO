@@ -39,12 +39,10 @@ public:
    static void ISR_encoder_Motore_PS();
    static void ISR_encoder_Motore_AS();
 
-   static void aggiorna_RPM_dei_quattro_motori();
    static void aggiorna_PID_dei_quattro_motori();
 
 
 
-   static HardwareTimer *Timer_per_rpm ;
    static HardwareTimer *Timer_per_pid ;
 
 #ifdef LOGGA_RPM

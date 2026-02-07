@@ -2,7 +2,7 @@
 #include "controller.h"
 //#include "bussola.h"
 
-//USARE CON   NO_PID NO_RPM NO_BUSSOLA (?)
+//USARE CON   NO_PID NO_BUSSOLA (?)
 void setup()
 {
     { // starting serial e programma
@@ -22,7 +22,7 @@ void setup()
     Serial.println("Starting  =>   misura durata funzioni");
     //bussola.begin();
         for ( int i=0;i<4;i++){
-        controller.motori[i].set_target_RPM(500);
+        controller.motori[i].set_target_RPM(400);
     }
 
 }
@@ -43,13 +43,13 @@ void loop()
 
 
 
-    ora_inizio=micros();
-    controller.aggiorna_RPM_dei_quattro_motori();
-    ora_fine=micros();
+    // ora_inizio=micros();
+    // controller.aggiorna_RPM_dei_quattro_motori();
+    // ora_fine=micros();
 
-    Serial.print(" controller aggiorna RPM 4 motori()  ");
-    Serial.print(ora_fine -ora_inizio);
-    Serial.println(" uSec \n");
+    // Serial.print(" controller aggiorna RPM 4 motori()  ");
+    // Serial.print(ora_fine -ora_inizio);
+    // Serial.println(" uSec \n");
 
     ora_inizio=micros();
     //bussola.update_heading();
@@ -73,8 +73,23 @@ void loop()
 
 
 }
-/* con 4 motori accesi pid e rpm
+/* con 4 motori accesi pid 
+ 
+ controller aggiorna pid 4 motori () 90 uSec 
 
+ Bussola update_heading() 1 uSec 
+
+ motore.ISR_encoder()() 1 uSec 
+
+ 
+ controller aggiorna pid 4 motori () 83 uSec 
+
+ Bussola update_heading() 1 uSec 
+
+ motore.ISR_encoder()() 2 uSec 
+
+
+ ####con 4 motori accesi pid e rpm
 
  controller aggiorna pid 4 motori () 97 uSec 
 
