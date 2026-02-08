@@ -5,23 +5,16 @@
 #include "robotpropin.h"
 #include "mediamobile.h"
 
-#define dim_log_RPM 300
+//costanti per eventuale log
+constexpr int dim_log_RPM=300;
+constexpr int dim_log_impulsi=300; 
 
-#define dim_log_impulsi 300
 
-
-//constexpr int DIM_BUFFER_MEDIE_RPM=2;
-
+//constexpr int DIM_BUFFER_MEDIE_RPM=2; 
 constexpr int DIM_BUFFER_MEDIE_IMPULSI=8;
 
-
-#define MIN_PWM 80
-#define MAX_PWM 255
-
-//TODO: sono define che dovrebbero essere spostati in controller
-// ma vengono usate anche qui: cattivo design?
-#define IMPULSI_PER_GIRO  (30*7.0f) 
-#define ALPHA  0.20f  //filtro anti rumore se serve 
+constexpr int IMPULSI_PER_GIRO=(30*7.0f) ;
+constexpr float ALPHA= 0.20f ;// costante per filtro ema su rpm 
 
 class Motore
 {
@@ -79,13 +72,10 @@ public:
 
   private:
     //variabili per calcolo RPM
-    volatile unsigned long conta_impulsi_encoder = 0;
-//             unsigned long ultimo_orario_campionamento = millis();
+    volatile unsigned long conta_impulsi_encoder = 0; //dovremmo aver un overflof ogni 600 ore circa ..
              unsigned long ultimo_conteggio_impulsi =0 ;
     
     //Media_mobile<float> mm_RPM;  
-    //variabili per filtro con media mobile su IMPULSI:
-     //se non è stato riempito il buffer la media non è su Dimensione ma sul numero elementi inseriti
  
     Media_mobile<long int> mm_impulsi; 
    

@@ -127,8 +127,8 @@ void Motore::aggiorna_lettura_rpm(int delta_t) //TODO: passi il deltat peche' co
     float rpm_raw =
       (float)delta * 60000.0f / (IMPULSI_PER_GIRO * delta_t);
 
-    //_rpm=mm_RPM.filtra(rpm_raw);
-    _rpm= 0.8 * _rpm + 0.2 * rpm_raw;
+    //ora uso filtro ema (più leggero) _rpm=mm_RPM.filtra(rpm_raw);
+    _rpm= (1-ALPHA)* _rpm + ALPHA * rpm_raw;
     #ifdef LOGGA_RPM
       logga_RPM();
     #endif
