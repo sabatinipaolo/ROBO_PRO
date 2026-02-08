@@ -37,11 +37,7 @@ void Motore::muovi(int pwm)
    #ifdef LOGGA_RPM
       reset_log_RPM();
    #endif
-    if ( (_pwm == 0) and (pwm!=0) )  //TODO: Anche per cambio direzione, forse da fermo a in moto è inutile
-      { //da fermo a in movimento 
-        reset_lettura_RPM();
-        mm_impulsi.reset();
-      }
+
     if(pwm==0 ) stop();
     else
     if (pwm > 0)
@@ -108,12 +104,7 @@ void Motore::ISR_encoder()
   }
 }
 
-void Motore::reset_lettura_RPM()
-{ //conta_impulsi_encoder=0;
-  ultimo_conteggio_impulsi=0;
-  _rpm=0;
-  //TODO resettare le medie ?
-}
+
 void Motore::aggiorna_lettura_rpm(int delta_t) //TODO: passi il deltat peche' come costante è definita on controller ..sistemare!!
 {
     noInterrupts();

@@ -37,8 +37,6 @@ public:
     int rpm_to_pwm(int rpm);
     void ISR_encoder();
 
-    void reset_lettura_RPM();
-
     void aggiorna_lettura_rpm(int delta_t);
 
     void set_target_RPM(float rpm);
