@@ -10,11 +10,10 @@ Motore &Controller::_mot_pos_dx = motori[1];
 Motore &Controller::_mot_pos_sx = motori[2];
 Motore &Controller::_mot_ant_sx = motori[3];
 
-//TODO: spostare PID nei motori in modo da rendere private _rpm e _rpm_target 
-QuickPID Controller::pids[] = {QuickPID(&Controller::_mot_ant_dx._rpm, &Controller::output_pid_AD, &Controller::_mot_ant_dx._rpm_target),
-                               QuickPID(&Controller::_mot_pos_dx._rpm, &Controller::output_pid_PD, &Controller::_mot_pos_dx._rpm_target),
-                               QuickPID(&Controller::_mot_pos_sx._rpm, &Controller::output_pid_PS, &Controller::_mot_pos_sx._rpm_target),
-                               QuickPID(&Controller::_mot_ant_sx._rpm, &Controller::output_pid_AS, &Controller::_mot_ant_sx._rpm_target)};
+QuickPID Controller::pids[] = {QuickPID(Controller::_mot_ant_dx.get_address_rpm(), &Controller::output_pid_AD, Controller::_mot_ant_dx.get_address_target_RPM()),
+                               QuickPID(Controller::_mot_pos_dx.get_address_rpm(), &Controller::output_pid_PD, Controller::_mot_pos_dx.get_address_target_RPM()),
+                               QuickPID(Controller::_mot_pos_sx.get_address_rpm(), &Controller::output_pid_PS, Controller::_mot_pos_sx.get_address_target_RPM()),
+                               QuickPID(Controller::_mot_ant_sx.get_address_rpm(), &Controller::output_pid_AS, Controller::_mot_ant_sx.get_address_target_RPM())};
 
 QuickPID &Controller::pid_AD=pids[0];
 QuickPID &Controller::pid_PD=pids[1];

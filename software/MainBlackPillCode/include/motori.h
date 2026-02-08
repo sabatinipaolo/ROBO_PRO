@@ -42,25 +42,16 @@ public:
     void set_target_RPM(float rpm);
 
     float get_target_RPM();
-
-    //TODO: in attesa che  vengano rese private usa comunque ueste:
+    float* get_address_target_RPM(){return &_rpm_target;};
       float get_rpm(){ return _rpm;};
+      float* get_address_rpm(){return &_rpm;};
+
       float get_pwm(){ return _pwm;};
-    //TODO: in attesa che  vengano rese private usa comunque ueste:
-      
-    
-
-    float _rpm=0;
-   
-  
-    // TODO: rpm_target pubblica in attesa di refactoring 
-    // usare set_target_RPM 
-    float _rpm_target;
-
-    int _pwm=0;
     
   private:
-   
+    float _rpm=0;
+    float _rpm_target;
+    int _pwm=0;
     int _pin1;
     int _pin2;
     int _pin_pwm;
