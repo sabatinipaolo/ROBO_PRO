@@ -111,7 +111,7 @@ void Controller::aggiorna_PID_dei_quattro_motori()
 
    for (int i = 0; i < 4; i++)
    {
-      if (abs(motori[i].get_rpm() - motori[i].get_target_RPM())>14) //TODO: definire una costante ...
+      //TODO: giusto quantizzare? if (abs(motori[i].get_rpm() - motori[i].get_target_RPM())>7) //TODO: definire una costante ...
       {
          pids[i].Compute();
          int pwm_cmd = (int)output_pids[i];
