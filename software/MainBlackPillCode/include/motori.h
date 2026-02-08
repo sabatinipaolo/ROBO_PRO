@@ -59,14 +59,14 @@ public:
 
     int _pwm=0;
     
+  private:
+   
     int _pin1;
     int _pin2;
     int _pin_pwm;
     int _pin_enc1;
     int _pin_enc2;
 
-
-  private:
     //variabili per calcolo RPM
     volatile unsigned long conta_impulsi_encoder = 0; //dovremmo aver un overflof ogni 600 ore circa ..
              unsigned long ultimo_conteggio_impulsi =0 ;
