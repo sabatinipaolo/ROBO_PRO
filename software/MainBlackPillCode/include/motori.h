@@ -46,7 +46,6 @@ public:
     //TODO: in attesa che  vengano rese private usa comunque ueste:
       float get_rpm(){ return _rpm;};
       float get_pwm(){ return _pwm;};
-      float get_pwm_base(){ return _pwm_base;};
     //TODO: in attesa che  vengano rese private usa comunque ueste:
       
     
@@ -59,7 +58,6 @@ public:
     float _rpm_target;
 
     int _pwm=0;
-    int _pwm_base=0;
     
     int _pin1;
     int _pin2;
