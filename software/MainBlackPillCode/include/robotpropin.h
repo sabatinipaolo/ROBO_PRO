@@ -117,8 +117,8 @@
 #define PIN_CDC_DP        PA12
 
 // I2C rimappato
-#define PIN_I2C_SCL      PB8
-#define PIN_I2C_SDA      PB9
+#define PIN_I2C_SCL      PB6
+#define PIN_I2C_SDA      PB7
 
 
 /*************************************************
