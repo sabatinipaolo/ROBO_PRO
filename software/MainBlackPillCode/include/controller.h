@@ -39,6 +39,8 @@ public:
    static void ISR_encoder_Motore_PS();
    static void ISR_encoder_Motore_AS();
 
+   static void aggiorna_RPM_dei_quattro_motori(int deltaTms);
+
    static void aggiorna_PID_dei_quattro_motori();
 
 

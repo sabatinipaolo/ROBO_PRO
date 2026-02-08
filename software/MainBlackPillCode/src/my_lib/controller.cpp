@@ -95,13 +95,24 @@ void Controller::ISR_encoder_Motore_AS()
    _mot_ant_sx.ISR_encoder();
 }
 
-void Controller::aggiorna_PID_dei_quattro_motori()
-{  //durata max 100 u sec ( microsecondi ) 
+void Controller::aggiorna_RPM_dei_quattro_motori(int deltaTms)
+{ // dura circa 7 -8  us (microsecondi)
    for (int i = 0; i < 4; i++)
    {
-      if (abs(motori[i].get_rpm() - motori[i].get_target_RPM())>7) //TODO: definire una costante ...
+      motori[i].aggiorna_lettura_rpm(deltaTms);
+
+   }
+}
+
+void Controller::aggiorna_PID_dei_quattro_motori()
+{  //durata max 100 u sec ( microsecondi ) //TODO: AGGIORNARE
+
+   aggiorna_RPM_dei_quattro_motori(INTERVALLO_CAMPIONAMENTO_PID);
+
+   for (int i = 0; i < 4; i++)
+   {
+      if (abs(motori[i].get_rpm() - motori[i].get_target_RPM())>14) //TODO: definire una costante ...
       {
-         motori[i].aggiorna_lettura_rpm(INTERVALLO_CAMPIONAMENTO_PID); // TODO: gli passo l'intervallo perche' è definito altrove .. sistemare!!
          pids[i].Compute();
          int pwm_cmd = (int)output_pids[i];
          pwm_cmd = constrain(pwm_cmd, -255, 255); // TODO: ridondante?
