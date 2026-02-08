@@ -15,7 +15,7 @@ void setup()
         Serial.begin(115200);
         while (!Serial1)
             ;
-        Serial.println("Starting  =>   test_controller_RPM_e_PID");
+        Serial.println("Starting  =>   test_controller_Dritto_a_0_gradi");
 
         for (int i = 10; i > 0; i--)
         {
