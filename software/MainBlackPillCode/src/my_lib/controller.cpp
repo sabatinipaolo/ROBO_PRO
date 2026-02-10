@@ -1,31 +1,51 @@
 #include "controller.h"
+/* adottata convenzione  ROS vedi: https://control.ros.org/rolling/doc/ros2_controllers/doc/mobile_robot_kinematics.html#omnidirectional-wheeled-mobile-robots
+                          ^  x
+              alpha >0   =0    <0
+                          |
+          mot_0    +      |      -    mot_3
+                  /       |       \
+                 -        |        +
+     y                    |
+    <---------------------+----------------        
+                          |     
+                          |        
+          mot_1  +        |        -  mot_2
+                  \       |       / 
+                   -      |      +
+*/
 
-Motore Controller::motori[] = {Motore(PIN_MOT_AD1, PIN_MOT_AD2,PIN_PWM_AD, PIN_ENC_AD1, PIN_ENC_AD2),
-                               Motore(PIN_MOT_PD1, PIN_MOT_PD2,PIN_PWM_PD, PIN_ENC_PD1, PIN_ENC_PD2),
+constexpr int i_AS=0;
+constexpr int i_PS=1;
+constexpr int i_PD=2;
+constexpr int i_AD=3;
+
+Motore Controller::motori[] = {Motore(PIN_MOT_AS1, PIN_MOT_AS2,PIN_PWM_AS, PIN_ENC_AS1, PIN_ENC_AS2),
                                Motore(PIN_MOT_PS1, PIN_MOT_PS2,PIN_PWM_PS, PIN_ENC_PS1, PIN_ENC_PS2),
-                               Motore(PIN_MOT_AS1, PIN_MOT_AS2,PIN_PWM_AS, PIN_ENC_AS1, PIN_ENC_AS2)};
+                               Motore(PIN_MOT_PD1, PIN_MOT_PD2,PIN_PWM_PD, PIN_ENC_PD1, PIN_ENC_PD2),
+                               Motore(PIN_MOT_AD1, PIN_MOT_AD2,PIN_PWM_AD, PIN_ENC_AD1, PIN_ENC_AD2)};
 
-Motore &Controller::_mot_ant_dx = motori[0];
-Motore &Controller::_mot_pos_dx = motori[1];
-Motore &Controller::_mot_pos_sx = motori[2];
-Motore &Controller::_mot_ant_sx = motori[3];
+Motore &Controller::_mot_ant_dx = motori[i_AD];
+Motore &Controller::_mot_pos_dx = motori[i_PD];
+Motore &Controller::_mot_pos_sx = motori[i_PS];
+Motore &Controller::_mot_ant_sx = motori[i_AS];
 
-QuickPID Controller::pids[] = {QuickPID(Controller::_mot_ant_dx.get_address_rpm(), &Controller::output_pid_AD, Controller::_mot_ant_dx.get_address_target_RPM()),
-                               QuickPID(Controller::_mot_pos_dx.get_address_rpm(), &Controller::output_pid_PD, Controller::_mot_pos_dx.get_address_target_RPM()),
+QuickPID Controller::pids[] = {QuickPID(Controller::_mot_ant_sx.get_address_rpm(), &Controller::output_pid_AS, Controller::_mot_ant_sx.get_address_target_RPM()),
                                QuickPID(Controller::_mot_pos_sx.get_address_rpm(), &Controller::output_pid_PS, Controller::_mot_pos_sx.get_address_target_RPM()),
-                               QuickPID(Controller::_mot_ant_sx.get_address_rpm(), &Controller::output_pid_AS, Controller::_mot_ant_sx.get_address_target_RPM())};
+                               QuickPID(Controller::_mot_pos_dx.get_address_rpm(), &Controller::output_pid_PD, Controller::_mot_pos_dx.get_address_target_RPM()),
+                               QuickPID(Controller::_mot_ant_dx.get_address_rpm(), &Controller::output_pid_AD, Controller::_mot_ant_dx.get_address_target_RPM())};
 
-QuickPID &Controller::pid_AD=pids[0];
-QuickPID &Controller::pid_PD=pids[1];
-QuickPID &Controller::pid_PS=pids[2];
-QuickPID &Controller::pid_AS=pids[3];
+QuickPID &Controller::pid_AD=pids[i_AD];
+QuickPID &Controller::pid_PD=pids[i_PD];
+QuickPID &Controller::pid_PS=pids[i_PS];
+QuickPID &Controller::pid_AS=pids[i_AS];
 
 
 float Controller::output_pids[]={0,0,0,0};
-float &Controller::output_pid_AD=output_pids[0];
-float &Controller::output_pid_PD=output_pids[1];
-float &Controller::output_pid_PS=output_pids[2];
-float &Controller::output_pid_AS=output_pids[3];
+float &Controller::output_pid_AD=output_pids[i_AD];
+float &Controller::output_pid_PD=output_pids[i_PD];
+float &Controller::output_pid_PS=output_pids[i_PS];
+float &Controller::output_pid_AS=output_pids[i_AS];
 
 
 HardwareTimer *Controller::Timer_per_pid =nullptr;
@@ -54,10 +74,10 @@ void Controller::init(){
       pids[i].SetOutputLimits(-255, 255);
       pids[i].SetMode(QuickPID::Control::timer);
    }
-   pids[0].SetTunings(0.80, 0.3, 0.0); // Kp, Ki, Kd
-   pids[1].SetTunings(0.80, 0.3, 0.0);       // Kp, Ki, Kd
-   pids[2].SetTunings(0.80, 0.4, 0.0);       // Kp, Ki, Kd
-   pids[3].SetTunings(0.80, 0.4, 0.0);       // Kp, Ki, Kd
+   pids[i_AD].SetTunings(0.80, 0.3, 0.0); // Kp, Ki, Kd
+   pids[i_PD].SetTunings(0.80, 0.3, 0.0);       // Kp, Ki, Kd
+   pids[i_PS].SetTunings(0.80, 0.4, 0.0);       // Kp, Ki, Kd
+   pids[i_AS].SetTunings(0.80, 0.4, 0.0);       // Kp, Ki, Kd
 
 #ifdef NO_PID
 #warning PID DISABILITATO !!! Are you sure ?
