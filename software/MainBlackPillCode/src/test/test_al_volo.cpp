@@ -8,7 +8,7 @@ Serial.begin(115200);
         Serial.begin(115200);
         while (!Serial1)
             ;
-        Serial.println("Starting  =>   test_controller_RPM_e_PID");
+        Serial.println("Starting  =>   test al volo");
 
         for (int i = 10; i > 0; i--)
         {
@@ -16,6 +16,9 @@ Serial.begin(115200);
             Serial.println(i);
             delay(200);
         };
+
+        Serial.println("Started  =>   test al volo");
+
     }
 }
 
