@@ -3,10 +3,7 @@
 #include <Adafruit_GFX.h>
 
 // guarda qui: https://community.platformio.org/t/stm32f411-based-custom-pcb-i2c-debugging/48614/2
-#ifdef BLACKPILL_F411CE
-  #define PIN_WIRE_SDA PB7 
-  #define PIN_WIRE_SCL PB6
-#endif 
+
 
 void setup() {
   Serial.begin(115200);
