@@ -19,8 +19,9 @@ public:
     void stampa4rpm(Controller &c);
     void stampa_angolo_velocita(float alfa, int velocita);
 
-private:
+
     void stampa4float( float,float,float,float);
+private:
 };
 
 extern Oled oled;
